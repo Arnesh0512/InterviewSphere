@@ -1,0 +1,83 @@
+package com.arnesh.interviewsphere.dto.response;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+public class GithubAiResponses {
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class SummaryResponse {
+        private String summary;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ProcessRepoResponse {
+        @JsonProperty("repo_name")
+        private String repoName;
+        private String summary;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class QuestionListResponse {
+        private List<String> questions;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class QuestionFeedback {
+        @JsonProperty("question_number")
+        private Integer questionNumber;
+        private String feedback;
+        private Double score;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class GithubEvaluationResponse {
+        @JsonProperty("feedback_per_question")
+        private List<QuestionFeedback> feedbackPerQuestion;
+
+        @JsonProperty("overall_feedback")
+        private String overallFeedback;
+
+        @JsonProperty("overall_score")
+        private Double overallScore;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class CombinedFeedbackDetails {
+        private String improvement;
+        private String weaknesses;
+        private String strengths;
+        private String recommendations;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class CombinedFeedbackResponse {
+        private CombinedFeedbackDetails feedback;
+    }
+}

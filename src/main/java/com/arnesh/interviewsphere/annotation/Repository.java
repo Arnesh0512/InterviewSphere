@@ -1,0 +1,17 @@
+package com.arnesh.interviewsphere.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Custom annotation to mark repository interfaces in the InterviewSphere domain.
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface Repository {
+    String value() default "";
+}
