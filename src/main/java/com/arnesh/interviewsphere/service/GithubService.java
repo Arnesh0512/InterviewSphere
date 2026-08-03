@@ -131,7 +131,7 @@ public class GithubService {
 
         for (int i = 0; i < aiQuestions.getQuestions().size(); i++) {
             questionBank.add(QuestionSession.Question.builder()
-                    .questionNumber(i + 1)
+                    .questionId(i + 1)
                     .question(aiQuestions.getQuestions().get(i))
                     .answer("")
                     .feedback("")
@@ -174,11 +174,11 @@ public class GithubService {
 
         githubVerificationService.verifySessionStatus(session);
         githubVerificationService.verifySessionTime(session, session.getId());
-        githubVerificationService.verifyQuestionNumber(session, request.getQuestionNumber());
+        githubVerificationService.verifyQuestionId(session, request.getQuestionId());
 
         if (session.getQuestionBank() != null) {
             for (QuestionSession.Question q : session.getQuestionBank()) {
-                if (Objects.equals(q.getQuestionNumber(), request.getQuestionNumber())) {
+                if (Objects.equals(q.getQuestionId(), request.getQuestionId())) {
                     q.setAnswer(request.getAnswer());
                     break;
                 }
@@ -200,7 +200,7 @@ public class GithubService {
         if (oldSession.getQuestionBank() != null) {
             for (QuestionSession.Question q : oldSession.getQuestionBank()) {
                 newQuestionBank.add(QuestionSession.Question.builder()
-                        .questionNumber(q.getQuestionNumber())
+                        .questionId(q.getQuestionId())
                         .question(q.getQuestion())
                         .answer("")
                         .feedback("")
@@ -262,13 +262,13 @@ public class GithubService {
         if (evaluation.getFeedbackPerQuestion() != null) {
             Map<Integer, GithubAiResponses.QuestionFeedback> feedbackMap = new HashMap<>();
             for (var item : evaluation.getFeedbackPerQuestion()) {
-                feedbackMap.put(item.getQuestionNumber(), item);
+                feedbackMap.put(item.getQuestionId(), item);
             }
 
             for (QuestionSession.Question q : session.getQuestionBank()) {
-                if (feedbackMap.containsKey(q.getQuestionNumber())) {
-                    q.setFeedback(feedbackMap.get(q.getQuestionNumber()).getFeedback());
-                    q.setScore(feedbackMap.get(q.getQuestionNumber()).getScore());
+                if (feedbackMap.containsKey(q.getQuestionId())) {
+                    q.setFeedback(feedbackMap.get(q.getQuestionId()).getFeedback());
+                    q.setScore(feedbackMap.get(q.getQuestionId()).getScore());
                 }
             }
         }

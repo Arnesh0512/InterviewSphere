@@ -110,7 +110,7 @@ public class ContestController {
     public ResponseEntity<ApiResponse<Map<String, Object>>> submitCodingAnswer(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam("contest_id") String contestId,
-            @RequestParam("question_id") String questionId,
+            @RequestParam("question_id") Integer questionId,
             @RequestParam("answer") String answer,
             @RequestParam("language") String language,
             @RequestParam("frontend_timestamp") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime frontendTimestamp

@@ -123,7 +123,7 @@ public class ConceptService {
 
         for (int i = 0; i < aiQuestions.getQuestions().size(); i++) {
             questionBank.add(QuestionSession.Question.builder()
-                    .questionNumber(i + 1)
+                    .questionId(i + 1)
                     .question(aiQuestions.getQuestions().get(i))
                     .answer("")
                     .feedback("")
@@ -164,11 +164,11 @@ public class ConceptService {
 
         conceptVerificationService.verifySessionStatus(session);
         conceptVerificationService.verifySessionTime(session, session.getId());
-        conceptVerificationService.verifyQuestionNumber(session, request.getQuestionNumber());
+        conceptVerificationService.verifyQuestionId(session, request.getQuestionId());
 
         if (session.getQuestionBank() != null) {
             for (QuestionSession.Question q : session.getQuestionBank()) {
-                if (Objects.equals(q.getQuestionNumber(), request.getQuestionNumber())) {
+                if (Objects.equals(q.getQuestionId(), request.getQuestionId())) {
                     q.setAnswer(request.getAnswer());
                     break;
                 }
@@ -189,7 +189,7 @@ public class ConceptService {
         if (oldSession.getQuestionBank() != null) {
             for (QuestionSession.Question q : oldSession.getQuestionBank()) {
                 newQuestionBank.add(QuestionSession.Question.builder()
-                        .questionNumber(q.getQuestionNumber())
+                        .questionId(q.getQuestionId())
                         .question(q.getQuestion())
                         .answer("")
                         .feedback("")
@@ -250,13 +250,13 @@ public class ConceptService {
         if (evaluation.getFeedbackPerQuestion() != null) {
             Map<Integer, ConceptAiResponses.QuestionFeedback> feedbackMap = new HashMap<>();
             for (var item : evaluation.getFeedbackPerQuestion()) {
-                feedbackMap.put(item.getQuestionNumber(), item);
+                feedbackMap.put(item.getQuestionId(), item);
             }
 
             for (QuestionSession.Question q : session.getQuestionBank()) {
-                if (feedbackMap.containsKey(q.getQuestionNumber())) {
-                    q.setFeedback(feedbackMap.get(q.getQuestionNumber()).getFeedback());
-                    q.setScore(feedbackMap.get(q.getQuestionNumber()).getScore());
+                if (feedbackMap.containsKey(q.getQuestionId())) {
+                    q.setFeedback(feedbackMap.get(q.getQuestionId()).getFeedback());
+                    q.setScore(feedbackMap.get(q.getQuestionId()).getScore());
                 }
             }
         }

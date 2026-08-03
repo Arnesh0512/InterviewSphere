@@ -139,7 +139,7 @@ public class ContestVerificationService {
         OffsetDateTime start = contest.getResumeRound().getStart();
         OffsetDateTime end = contest.getResumeRound().getEnd();
 
-        if (timestamp.isBefore(start) || timestamp.isAfter(end)) {
+        if (timestamp.compareTo(start) <= 0 || timestamp.compareTo(end) >= 0) {
             throw new CustomException("Resume submission window closed", HttpStatus.BAD_REQUEST);
         }
     }
@@ -148,7 +148,7 @@ public class ContestVerificationService {
         OffsetDateTime start = contest.getCodingRound().getStart();
         OffsetDateTime end = contest.getCodingRound().getEnd();
 
-        if (timestamp.isBefore(start) || timestamp.isAfter(end)) {
+        if (timestamp.compareTo(start) <= 0 || timestamp.compareTo(end) >= 0) {
             throw new CustomException("Coding submission window closed", HttpStatus.BAD_REQUEST);
         }
     }
@@ -157,7 +157,7 @@ public class ContestVerificationService {
         OffsetDateTime start = contest.getConceptRound().getStart();
         OffsetDateTime end = contest.getConceptRound().getEnd();
 
-        if (timestamp.isBefore(start) || timestamp.isAfter(end)) {
+        if (timestamp.compareTo(start) <= 0 || timestamp.compareTo(end) >= 0) {
             throw new CustomException("Concept submission window closed", HttpStatus.BAD_REQUEST);
         }
     }
@@ -166,7 +166,7 @@ public class ContestVerificationService {
         OffsetDateTime start = contest.getHrRound().getStart();
         OffsetDateTime end = contest.getHrRound().getEnd();
 
-        if (timestamp.isBefore(start) || timestamp.isAfter(end)) {
+        if (timestamp.compareTo(start) <= 0 || timestamp.compareTo(end) >= 0) {
             throw new CustomException("HR submission window closed", HttpStatus.BAD_REQUEST);
         }
     }
@@ -180,7 +180,7 @@ public class ContestVerificationService {
         OffsetDateTime startTime = (OffsetDateTime) coding.get("start_time");
         OffsetDateTime endTime = (OffsetDateTime) coding.get("end_time");
 
-        if (timestamp.isBefore(startTime) || timestamp.isAfter(endTime)) {
+        if (timestamp.compareTo(startTime) <= 0 || timestamp.compareTo(endTime) >= 0) {
             throw new CustomException("Coding submission window closed", HttpStatus.BAD_REQUEST);
         }
     }
@@ -188,13 +188,13 @@ public class ContestVerificationService {
     public void verifyConceptTime(OffsetDateTime timestamp, Contest contest, ContestCandidateResponse contestCandidate) {
         Map<String, Object> concept = contestCandidate.getConcept();
         if (concept == null) {
-            throw new CustomException("Concept round not started", HttpStatus.BAD_REQUEST);
+            throw new CustomException("concept round not started", HttpStatus.BAD_REQUEST);
         }
 
         OffsetDateTime startTime = (OffsetDateTime) concept.get("start_time");
         OffsetDateTime endTime = (OffsetDateTime) concept.get("end_time");
 
-        if (timestamp.isBefore(startTime) || timestamp.isAfter(endTime)) {
+        if (timestamp.compareTo(startTime) <= 0 || timestamp.compareTo(endTime) >= 0) {
             throw new CustomException("Concept submission window closed", HttpStatus.BAD_REQUEST);
         }
     }
@@ -208,7 +208,7 @@ public class ContestVerificationService {
         OffsetDateTime startTime = (OffsetDateTime) hr.get("start_time");
         OffsetDateTime endTime = (OffsetDateTime) hr.get("end_time");
 
-        if (timestamp.isBefore(startTime) || timestamp.isAfter(endTime)) {
+        if (timestamp.compareTo(startTime) <= 0 || timestamp.compareTo(endTime) >= 0) {
             throw new CustomException("HR submission window closed", HttpStatus.BAD_REQUEST);
         }
     }
@@ -251,16 +251,58 @@ public class ContestVerificationService {
     // 4. QUESTION VERIFICATIONS
     // ==========================================
 
-    public void verifyCodingQuestion(Contest contest, String questionId) {
-        // Validation check against coding question bank
+    public void verifyCodingQuestion(Contest contest, Integer questionId) {
+        Object questionsObj = contest.getCodingRound().getQuestions();
+        if (questionsObj instanceof List<?> questionIds) {
+            boolean found = questionIds.stream().anyMatch(q -> {
+                if (q instanceof Integer i) return i.equals(questionId);
+                if (q instanceof String s) return s.equals(String.valueOf(questionId));
+                return false;
+            });
+            if (!found) {
+                throw new CustomException("Invalid coding question id", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            throw new CustomException("Invalid coding question id", HttpStatus.BAD_REQUEST);
+        }
     }
 
-    public void verifyConceptQuestion(Contest contest, String questionId) {
-        // Validation check against concept question bank
+    public void verifyConceptQuestion(Contest contest, Integer questionId) {
+        Object questionsObj = contest.getConceptRound().getQuestions();
+        if (questionsObj instanceof List<?> questions) {
+            boolean found = questions.stream().anyMatch(q -> {
+                if (q instanceof Map<?, ?> map) {
+                    Object qId = map.get("question_id");
+                    if (qId instanceof Integer i) return i.equals(questionId);
+                    if (qId instanceof String s) return s.equals(String.valueOf(questionId));
+                }
+                return false;
+            });
+            if (!found) {
+                throw new CustomException("Invalid concept question id", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            throw new CustomException("Invalid concept question id", HttpStatus.BAD_REQUEST);
+        }
     }
 
-    public void verifyHrQuestion(Contest contest, String questionId) {
-        // Validation check against HR question bank
+    public void verifyHrQuestion(Contest contest, Integer questionId) {
+        Object questionsObj = contest.getHrRound().getQuestions();
+        if (questionsObj instanceof List<?> questions) {
+            boolean found = questions.stream().anyMatch(q -> {
+                if (q instanceof Map<?, ?> map) {
+                    Object qId = map.get("question_id");
+                    if (qId instanceof Integer i) return i.equals(questionId);
+                    if (qId instanceof String s) return s.equals(String.valueOf(questionId));
+                }
+                return false;
+            });
+            if (!found) {
+                throw new CustomException("Invalid HR question id", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            throw new CustomException("Invalid HR question id", HttpStatus.BAD_REQUEST);
+        }
     }
 
     // ==========================================
@@ -268,31 +310,41 @@ public class ContestVerificationService {
     // ==========================================
 
     public void verifyResumeResultTime(OffsetDateTime timestamp, Contest contest) {
-        if (timestamp.isBefore(contest.getResumeRound().getResult())) {
+        OffsetDateTime resultTime = contest.getResumeRound().getResult();
+
+        if (timestamp.isBefore(resultTime)) {
             throw new CustomException("Resume results not declared yet", HttpStatus.FORBIDDEN);
         }
     }
 
     public void verifyCodingResultTime(OffsetDateTime timestamp, Contest contest) {
-        if (timestamp.isBefore(contest.getCodingRound().getResult())) {
+        OffsetDateTime resultTime = contest.getCodingRound().getResult();
+
+        if (timestamp.isBefore(resultTime)) {
             throw new CustomException("Coding results not declared yet", HttpStatus.FORBIDDEN);
         }
     }
 
     public void verifyConceptResultTime(OffsetDateTime timestamp, Contest contest) {
-        if (timestamp.isBefore(contest.getConceptRound().getResult())) {
+        OffsetDateTime resultTime = contest.getConceptRound().getResult();
+
+        if (timestamp.isBefore(resultTime)) {
             throw new CustomException("Concept results not declared yet", HttpStatus.FORBIDDEN);
         }
     }
 
     public void verifyHrResultTime(OffsetDateTime timestamp, Contest contest) {
-        if (timestamp.isBefore(contest.getHrRound().getResult())) {
+        OffsetDateTime resultTime = contest.getHrRound().getResult();
+
+        if (timestamp.isBefore(resultTime)) {
             throw new CustomException("HR results not declared yet", HttpStatus.FORBIDDEN);
         }
     }
 
     public void verifyLeaderboardDeclareTime(OffsetDateTime timestamp, Contest contest) {
-        if (timestamp.isBefore(contest.getLeaderboardDeclareTime())) {
+        OffsetDateTime resultTime = contest.getLeaderboardDeclareTime();
+
+        if (timestamp.isBefore(resultTime)) {
             throw new CustomException("Leaderboard not declared yet", HttpStatus.FORBIDDEN);
         }
     }
@@ -341,8 +393,44 @@ public class ContestVerificationService {
     }
 
     // ==========================================
-    // 7. ROUND DATA EXTRACTORS
+    // 7. ADDITIONAL UTILITIES & ROUND DATA EXTRACTORS
     // ==========================================
+
+    public void verifyContestEndTime(OffsetDateTime timestamp, Contest contest) {
+        OffsetDateTime contestEnd = contest.getContestEnd();
+
+        if (timestamp.isBefore(contestEnd)) {
+            throw new CustomException("Contest not ended yet", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> verifyHrAudioAnswer(ContestCandidateResponse contestCandidate, Integer questionId) {
+        Map<String, Object> hr = contestCandidate.getHr();
+
+        if (hr == null) {
+            throw new CustomException("Candidate did not participate in HR round", HttpStatus.NOT_FOUND);
+        }
+
+        List<Map<String, Object>> questionBank = (List<Map<String, Object>>) hr.get("question_bank");
+        if (questionBank != null) {
+            for (Map<String, Object> q : questionBank) {
+                Object qId = q.get("question_id");
+                boolean matches = false;
+                if (qId instanceof Integer i) matches = i.equals(questionId);
+                else if (qId instanceof String s) matches = s.equals(String.valueOf(questionId));
+
+                if (matches) {
+                    if (q.get("audio_id") == null) {
+                        throw new CustomException("HR answer not found", HttpStatus.NOT_FOUND);
+                    }
+                    return q;
+                }
+            }
+        }
+
+        throw new CustomException("HR answer not found", HttpStatus.NOT_FOUND);
+    }
 
     public Map<String, Object> verifyResumeRoundData(ContestCandidateResponse contestCandidate) {
         Map<String, Object> resume = contestCandidate.getResume();

@@ -125,7 +125,7 @@ public class GithubPrompts {
             {
                 "feedback_per_question": [
                     {
-                        "question_number": 1,
+                        "question_id": 1,
                         "feedback": "...",
                         "score": 8
                     }

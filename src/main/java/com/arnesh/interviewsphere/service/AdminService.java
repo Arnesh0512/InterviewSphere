@@ -90,7 +90,7 @@ public class AdminService {
         List<String> resumeQuestions = adminAiService.generateResumeQuestions(
                 request.getCompany().name(), request.getRole().name(), skillStrings, request.getResumeQuestionsCount());
 
-        List<String> codingQuestionIds = adminUtil.generateCodingIds(
+        List<Integer> codingQuestionIds = adminUtil.generateCodingIds(
                 request.getCompany().name(), request.getCodingQuestionsCount());
 
         List<String> conceptQuestions = adminAiService.generateConceptQuestions(
@@ -99,20 +99,34 @@ public class AdminService {
         List<String> hrQuestions = adminAiService.generateHrQuestions(
                 request.getRole().name(), Math.max(1, request.getHrQuestionsCount() - 1));
 
-        Map<String, String> resumeQMap = new HashMap<>();
+                
+        List<Map<String, Object>> resumeQuestionsList = new ArrayList<>();
         for (int i = 0; i < resumeQuestions.size(); i++) {
-            resumeQMap.put(String.valueOf(i + 1), resumeQuestions.get(i));
+            Map<String, Object> qMap = new HashMap<>();
+            qMap.put("question_id", i + 1);
+            qMap.put("question", resumeQuestions.get(i));
+            resumeQuestionsList.add(qMap);
         }
 
-        Map<String, String> conceptQMap = new HashMap<>();
+        List<Map<String, Object>> conceptQuestionsList = new ArrayList<>();
         for (int i = 0; i < conceptQuestions.size(); i++) {
-            conceptQMap.put(String.valueOf(i + 1), conceptQuestions.get(i));
+            Map<String, Object> qMap = new HashMap<>();
+            qMap.put("question_id", i + 1);
+            qMap.put("question", conceptQuestions.get(i));
+            conceptQuestionsList.add(qMap);
         }
 
-        Map<String, String> hrQMap = new HashMap<>();
-        hrQMap.put("1", "Introduce Yourself");
+        List<Map<String, Object>> hrQuestionsList = new ArrayList<>();
+        Map<String, Object> firstHrMap = new HashMap<>();
+        firstHrMap.put("question_id", 1);
+        firstHrMap.put("question", "Introduce Yourself");
+        hrQuestionsList.add(firstHrMap);
+
         for (int i = 0; i < hrQuestions.size(); i++) {
-            hrQMap.put(String.valueOf(i + 2), hrQuestions.get(i));
+            Map<String, Object> qMap = new HashMap<>();
+            qMap.put("question_id", i + 2);
+            qMap.put("question", hrQuestions.get(i));
+            hrQuestionsList.add(qMap);
         }
 
         Contest.RoundTimeDto resumeRound = Contest.RoundTimeDto.builder()
@@ -120,6 +134,7 @@ public class AdminService {
                 .end(request.getResumeRound().getEnd())
                 .duration(request.getResumeRound().getDuration())
                 .result(request.getResumeRound().getResult())
+                .questions(resumeQuestionsList) // <-- Attach the list here
                 .build();
 
         Contest.RoundTimeDto codingRound = Contest.RoundTimeDto.builder()
@@ -135,6 +150,7 @@ public class AdminService {
                 .end(request.getConceptRound().getEnd())
                 .duration(request.getConceptRound().getDuration())
                 .result(request.getConceptRound().getResult())
+                .questions(conceptQuestionsList) // <-- Attach the list here
                 .build();
 
         Contest.RoundTimeDto hrRound = Contest.RoundTimeDto.builder()
@@ -142,6 +158,7 @@ public class AdminService {
                 .end(request.getHrRound().getEnd())
                 .duration(request.getHrRound().getDuration())
                 .result(request.getHrRound().getResult())
+                .questions(hrQuestionsList) // <-- Attach the list here
                 .build();
 
         Contest contest = Contest.builder()

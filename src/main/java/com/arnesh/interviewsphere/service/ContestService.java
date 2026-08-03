@@ -183,10 +183,24 @@ public class ContestService {
         }
 
         List<String> skills = contest.getSkills().stream().map(s -> s.name()).toList();
-        Map<String, String> resumeQuestions = new HashMap<>(); 
+        
+        // Correctly extract the list of question objects from the resume round
+        Object resumeQuestionsObj = contest.getResumeRound().getQuestions();
+        List<Map<String, Object>> formattedResumeQuestions = new ArrayList<>();
+        
+        if (resumeQuestionsObj instanceof List<?> rawList) {
+            for (Object item : rawList) {
+                if (item instanceof Map<?, ?> qMap) {
+                    Map<String, Object> formattedMap = new HashMap<>();
+                    formattedMap.put("question_id", qMap.get("question_id"));
+                    formattedMap.put("question", qMap.get("question"));
+                    formattedResumeQuestions.add(formattedMap);
+                }
+            }
+        }
 
         ContestAiResponses.ContestEvaluationResponse evalResponse = contestAiService.evaluateResumeScore(
-                resumeText, resumeQuestions, contest.getCompany().name(), contest.getRole().name(), skills);
+                resumeText, formattedResumeQuestions, contest.getCompany().name(), contest.getRole().name(), skills);
 
         String summary = contestAiService.generateSummary(resumeText);
 
@@ -311,7 +325,7 @@ public class ContestService {
     // 9. Submit Coding Round Single Answer
     @Transactional
     @SuppressWarnings("unchecked")
-    public Map<String, Object> submitCodingAnswer(UserPrincipal principal, String contestIdStr, String questionId, String answer, String language, OffsetDateTime frontendTimestamp) {
+    public Map<String, Object> submitCodingAnswer(UserPrincipal principal, String contestIdStr, Integer questionId, String answer, String language, OffsetDateTime frontendTimestamp) {
         OffsetDateTime backendTimestamp = TimeUtil.generateTimestamp();
         OffsetDateTime timestamp = contestVerificationService.verifyTimestamp(frontendTimestamp, backendTimestamp);
 

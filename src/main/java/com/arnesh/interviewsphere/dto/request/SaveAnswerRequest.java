@@ -1,6 +1,5 @@
 package com.arnesh.interviewsphere.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -15,12 +14,10 @@ import lombok.NoArgsConstructor;
 public class SaveAnswerRequest {
 
     @NotBlank(message = "Question ID is required")
-    private String questionId;
+    private Integer questionId;
 
     private String answer;
 
     private String language;
 
-    @JsonProperty("question_number")
-    private Integer questionNumber;
 }

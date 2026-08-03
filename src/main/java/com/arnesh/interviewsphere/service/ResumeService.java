@@ -14,7 +14,6 @@ import com.arnesh.interviewsphere.repository.CandidateRepository;
 import com.arnesh.interviewsphere.repository.PracticeResumeTrackRepository;
 import com.arnesh.interviewsphere.repository.QuestionSessionRepository;
 import com.arnesh.interviewsphere.security.UserPrincipal;
-import com.arnesh.interviewsphere.util.PdfOcrExtractor;
 import com.arnesh.interviewsphere.util.ResumeUtil;
 import com.arnesh.interviewsphere.util.TimeUtil;
 import com.arnesh.interviewsphere.verification.CandidateVerificationService;
@@ -40,7 +39,6 @@ public class ResumeService {
     private final CandidateVerificationService candidateVerificationService;
     private final ResumeVerificationService resumeVerificationService;
     private final ResumeAiService resumeAiService;
-    private final PdfOcrExtractor pdfOcrExtractor;
     private final ResumeUtil resumeUtil;
     private final SupabaseStorageService supabaseStorageService;
 
@@ -66,15 +64,14 @@ public class ResumeService {
             throw new CustomException("Failed to process file locally", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+        // Inside ResumeService.java, update the uploadResume method's text processing block:
+
         String summary;
         try {
-            if ("Y".equalsIgnoreCase(ocrMode)) {
-                summary = pdfOcrExtractor.extractTextWithOcr(tempFile);
-            } else {
-                summary = pdfOcrExtractor.extractTextWithoutOcr(tempFile);
-            }
+            // Let ResumeAiService handle text extraction (OCR or without OCR) AND LLM summarization
+            summary = resumeAiService.processResume(tempFile.getAbsolutePath(), ocrMode);
             
-            // Sanitize extracted text to remove null bytes (0x00) which break Postgres UTF-8 encoding
+            // Sanitize generated summary to remove null bytes (0x00) which break Postgres UTF-8 encoding
             if (summary != null) {
                 summary = summary.replace("\0", "");
             }
@@ -172,7 +169,7 @@ public class ResumeService {
 
         for (int i = 0; i < aiQuestions.getQuestions().size(); i++) {
             questionBank.add(QuestionSession.Question.builder()
-                    .questionNumber(i + 1)
+                    .questionId(i + 1)
                     .question(aiQuestions.getQuestions().get(i))
                     .answer("")
                     .feedback("")
@@ -197,7 +194,7 @@ public class ResumeService {
 
         List<Map<String, Object>> formattedQuestionBank = questionBank.stream().map(q -> {
             Map<String, Object> map = new HashMap<>();
-            map.put("questionNumber", q.getQuestionNumber());
+            map.put("questionId", q.getQuestionId());
             map.put("question", q.getQuestion());
             map.put("answer", q.getAnswer());
             map.put("feedback", q.getFeedback());
@@ -226,11 +223,11 @@ public class ResumeService {
 
         resumeVerificationService.verifySessionStatus(session);
         resumeVerificationService.verifySessionTime(session, session.getId());
-        resumeVerificationService.verifyQuestionNumber(session, request.getQuestionNumber());
+        resumeVerificationService.verifyQuestionId(session, request.getQuestionId());
 
         if (session.getQuestionBank() != null) {
             for (QuestionSession.Question q : session.getQuestionBank()) {
-                if (Objects.equals(q.getQuestionNumber(), request.getQuestionNumber())) {
+                if (Objects.equals(q.getQuestionId(), request.getQuestionId())) {
                     q.setAnswer(request.getAnswer());
                     break;
                 }
@@ -252,7 +249,7 @@ public class ResumeService {
         if (oldSession.getQuestionBank() != null) {
             for (QuestionSession.Question q : oldSession.getQuestionBank()) {
                 newQuestionBank.add(QuestionSession.Question.builder()
-                        .questionNumber(q.getQuestionNumber())
+                        .questionId(q.getQuestionId())
                         .question(q.getQuestion())
                         .answer("")
                         .feedback("")
@@ -314,13 +311,13 @@ public class ResumeService {
         if (evaluation.getFeedbackPerQuestion() != null) {
             Map<Integer, ResumeAiResponses.QuestionFeedback> feedbackMap = new HashMap<>();
             for (var item : evaluation.getFeedbackPerQuestion()) {
-                feedbackMap.put(item.getQuestionNumber(), item);
+                feedbackMap.put(item.getQuestionId(), item);
             }
 
             for (QuestionSession.Question q : session.getQuestionBank()) {
-                if (feedbackMap.containsKey(q.getQuestionNumber())) {
-                    q.setFeedback(feedbackMap.get(q.getQuestionNumber()).getFeedback());
-                    q.setScore(feedbackMap.get(q.getQuestionNumber()).getScore());
+                if (feedbackMap.containsKey(q.getQuestionId())) {
+                    q.setFeedback(feedbackMap.get(q.getQuestionId()).getFeedback());
+                    q.setScore(feedbackMap.get(q.getQuestionId()).getScore());
                 }
             }
         }

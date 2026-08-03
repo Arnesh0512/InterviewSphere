@@ -16,10 +16,7 @@ public class CodingAiResponses {
     @Builder
     public static class QuestionFeedback {
         @JsonProperty("question_id")
-        private String questionId;
-
-        @JsonProperty("question_number")
-        private Integer questionNumber;
+        private Integer questionId;
 
         private String feedback;
         private Double score;

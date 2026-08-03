@@ -9,9 +9,9 @@ import com.arnesh.interviewsphere.annotation.Repository;
 import java.util.List;
 
 @Repository
-public interface LeetCodeQuestionRepository extends JpaRepository<LeetCodeQuestion, String> {
+public interface LeetCodeQuestionRepository extends JpaRepository<LeetCodeQuestion, Integer> {
 
-    List<LeetCodeQuestion> findByQuestionIdIn(List<String> questionIds);
+    List<LeetCodeQuestion> findByQuestionIdIn(List<Integer> questionIds);
 
     @Query(value = "SELECT COUNT(*) FROM leetcode_questions WHERE :company = ANY(companies)", nativeQuery = true)
     long countByCompaniesContaining(@Param("company") String company);

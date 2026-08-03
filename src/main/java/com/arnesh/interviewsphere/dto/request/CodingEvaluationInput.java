@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class CodingEvaluationInput {
-    private String questionId;
+    private Integer questionId;
     private String problemDescription;
     private String answer;
     private String language;

@@ -33,7 +33,7 @@ public class CodingPrompts {
             {
               "feedback_per_question": [
                 {
-                  "question_id": "1",
+                  "question_id": 1,
                   "feedback": "...",
                   "score": 8
                 }

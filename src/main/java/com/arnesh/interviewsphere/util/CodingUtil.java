@@ -27,15 +27,15 @@ public class CodingUtil {
     /**
      * Gets all unique question IDs used in previous sessions for a coding track.
      */
-    public List<String> getUsedCodingQuestionIds(UUID codingId) {
+    public List<Integer> getUsedCodingQuestionIds(UUID codingId) {
         List<QuestionSession> sessions = questionSessionRepository.findByCodingTrackId(codingId);
-        Set<String> usedQuestions = new HashSet<>();
+        Set<Integer> usedQuestions = new HashSet<>();
 
         for (QuestionSession session : sessions) {
             if (session.getQuestionBank() != null) {
                 for (QuestionSession.Question q : session.getQuestionBank()) {
                     if (q.getQuestionId() != null) {
-                        usedQuestions.add(q.getQuestionId().toString());
+                        usedQuestions.add(q.getQuestionId());
                     }
                 }
             }
@@ -73,7 +73,7 @@ public class CodingUtil {
             }
         }
 
-        Set<String> questionIds = new HashSet<>();
+        Set<Integer> questionIds = new HashSet<>();
         List<QuestionSession> sessionsDiff = (sessionNumber != null && !sessions.isEmpty())
                 ? List.of(sessions.get(0))
                 : sessions;
@@ -82,14 +82,14 @@ public class CodingUtil {
             if (s.getQuestionBank() != null) {
                 for (QuestionSession.Question q : s.getQuestionBank()) {
                     if (q.getAnswer() != null && !q.getAnswer().isBlank() && q.getQuestionId() != null) {
-                        questionIds.add(q.getQuestionId().toString());
+                        questionIds.add(q.getQuestionId());
                     }
                 }
             }
         }
 
         List<LeetCodeQuestion> problems = leetCodeQuestionRepository.findAllById(questionIds);
-        Map<String, String> problemMap = new HashMap<>();
+        Map<Integer, String> problemMap = new HashMap<>();
         for (LeetCodeQuestion p : problems) {
             problemMap.put(p.getQuestionId(), p.getProblemDescription());
         }
@@ -103,16 +103,15 @@ public class CodingUtil {
 
             if (s.getQuestionBank() != null) {
                 for (QuestionSession.Question q : s.getQuestionBank()) {
-                    UUID qid = q.getQuestionId();
-                    String qidStr = qid != null ? qid.toString() : "";
+                    Integer qid = q.getQuestionId();
                     String answer = q.getAnswer();
                     String language = q.getLanguage();
 
-                    if (answer == null || answer.isBlank() || !problemMap.containsKey(qidStr)) {
+                    if (answer == null || answer.isBlank() || !problemMap.containsKey(qid)) {
                         continue;
                     }
 
-                    String problemDescription = problemMap.get(qidStr);
+                    String problemDescription = problemMap.get(qid);
                     formattedQuestions.put(problemDescription, "Language: " + language + "\n Answer:\n" + answer);
                 }
             }

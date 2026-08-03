@@ -24,7 +24,7 @@ public class ContestAiResponses {
     @Builder
     public static class ScoreResult {
         @JsonProperty("question_id")
-        private String questionId;
+        private Integer questionId;
         private String feedback;
         private Double score;
     }

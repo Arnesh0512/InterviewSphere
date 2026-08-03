@@ -31,8 +31,9 @@ public class ResumeAiResponses {
     @AllArgsConstructor
     @Builder
     public static class QuestionFeedback {
-        @JsonProperty("question_number")
-        private Integer questionNumber;
+        @JsonProperty("question_id")
+        private Integer questionId;
+
         private String feedback;
         private Double score;
     }

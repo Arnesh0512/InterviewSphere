@@ -100,9 +100,7 @@ public class CodingVerificationService {
      * Verifies if a given question ID exists in the session's question bank[cite:
      * 20].
      */
-    public String verifyQuestionId(QuestionSession sessionDoc, String questionIdStr) {
-        UUID questionId = parseUuid(questionIdStr, "Invalid question_id", HttpStatus.BAD_REQUEST);
-
+    public Integer verifyQuestionId(QuestionSession sessionDoc, Integer questionId) {
         List<QuestionSession.Question> questionBank = sessionDoc.getQuestionBank() != null
                 ? sessionDoc.getQuestionBank()
                 : List.of();
@@ -116,7 +114,7 @@ public class CodingVerificationService {
             throw new CustomException("Invalid question_id", HttpStatus.BAD_REQUEST);
         }
 
-        return questionIdStr;
+        return questionId;
     }
 
     /**

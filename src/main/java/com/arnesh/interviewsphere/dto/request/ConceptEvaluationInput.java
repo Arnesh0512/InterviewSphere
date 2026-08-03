@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ConceptEvaluationInput {
-    private String questionId;
+    private Integer questionId;
     private String question;
     private String answer;
 }

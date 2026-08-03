@@ -48,15 +48,15 @@ public class ContestAiService {
      * questions[cite: 15].
      */
     public ContestEvaluationResponse evaluateResumeScore(
-            String resumeText,
-            Map<String, String> resumeQuestions,
-            String company,
-            String role,
-            List<String> skills) {
-        try {
-            String questionsText = resumeQuestions.entrySet().stream()
-                    .map(e -> e.getKey() + ". " + e.getValue())
-                    .collect(Collectors.joining("\n"));
+        String resumeText,
+        List<Map<String, Object>> resumeQuestions,
+        String company,
+        String role,
+        List<String> skills) {
+    try {
+        String questionsText = resumeQuestions.stream()
+                .map(q -> q.get("question_id") + ". " + q.get("question"))
+                .collect(Collectors.joining("\n"));
 
             String content = String.format("""
                     Resume:

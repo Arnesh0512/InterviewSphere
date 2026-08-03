@@ -21,7 +21,7 @@ public class LeetCodeQuestion {
     @Id
     @Column(name = "question_id")
     @JsonProperty("question_id")
-    private String questionId;
+    private Integer questionId;
 
     @Column(name = "task_name", nullable = false)
     @JsonProperty("task_name")

@@ -64,19 +64,23 @@ public class ContestEvaluationUtil {
 
         List<Map<String, Object>> questionBank = (List<Map<String, Object>>) codingData.get("questionBank");
 
-        List<String> questionIds = questionBank.stream()
-                .map(q -> (String) q.get("questionId"))
+        List<Integer> questionIds = questionBank.stream()
+                .map(q -> {
+                    Object id = q.get("questionId");
+                    return id != null ? Integer.parseInt(id.toString()) : null;
+                })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        Map<String, String> questionMap = leetCodeQuestionRepository.findAllById(questionIds).stream()
+        Map<Integer, String> questionMap = leetCodeQuestionRepository.findAllById(questionIds).stream()
                 .collect(Collectors.toMap(q -> q.getQuestionId(), q -> q.getProblemDescription()));
 
         List<CodingEvaluationInput> evaluationInput = questionBank.stream().map(q -> {
-            String qid = (String) q.get("questionId");
+            Object id = q.get("questionId");
+            Integer qid = id != null ? Integer.parseInt(id.toString()) : 0;
             return CodingEvaluationInput.builder()
-                    .questionId(qid != null ? qid : "")
-                    .problemDescription(qid != null ? questionMap.getOrDefault(qid, "") : "")
+                    .questionId(qid)
+                    .problemDescription(questionMap.getOrDefault(qid, ""))
                     .answer((String) q.getOrDefault("answer", ""))
                     .language((String) q.getOrDefault("language", ""))
                     .build();
@@ -84,8 +88,8 @@ public class ContestEvaluationUtil {
 
         ContestAiResponses.ContestEvaluationResponse response = contestAiService.evaluateCodingScore(evaluationInput);
 
-        Map<String, Double> scoreMap = new HashMap<>();
-        Map<String, String> feedbackMap = new HashMap<>();
+        Map<Integer, Double> scoreMap = new HashMap<>();
+        Map<Integer, String> feedbackMap = new HashMap<>();
 
         if (response.getResults() != null) {
             for (var res : response.getResults()) {
@@ -124,11 +128,11 @@ public class ContestEvaluationUtil {
         List<ConceptEvaluationInput> evaluationInput = new ArrayList<>();
         for (var q : questionBank) {
             Object qidObj = q.get("questionId");
-            String qidStr = qidObj != null ? String.valueOf(qidObj) : "";
+            Integer qid = qidObj != null ? Integer.parseInt(qidObj.toString()) : 0;
             String questionText = (String) q.getOrDefault("question", "");
 
             evaluationInput.add(ConceptEvaluationInput.builder()
-                    .questionId(qidStr)
+                    .questionId(qid)
                     .question(questionText)
                     .answer((String) q.getOrDefault("answer", ""))
                     .build());
@@ -136,8 +140,8 @@ public class ContestEvaluationUtil {
 
         ContestAiResponses.ContestEvaluationResponse response = contestAiService.evaluateConceptScore(evaluationInput);
 
-        Map<String, Double> scoreMap = new HashMap<>();
-        Map<String, String> feedbackMap = new HashMap<>();
+        Map<Integer, Double> scoreMap = new HashMap<>();
+        Map<Integer, String> feedbackMap = new HashMap<>();
 
         if (response.getResults() != null) {
             for (var res : response.getResults()) {
@@ -169,15 +173,18 @@ public class ContestEvaluationUtil {
 
         List<Map<String, Object>> questionBank = (List<Map<String, Object>>) hrData.get("questionBank");
 
+
+
+        
         List<HrEvaluationInput> evaluationInput = new ArrayList<>();
         for (var q : questionBank) {
             Object qidObj = q.get("questionId");
-            String qidStr = qidObj != null ? String.valueOf(qidObj) : "";
+            Integer qid = qidObj != null ? Integer.parseInt(qidObj.toString()) : 0;
             String questionText = (String) q.getOrDefault("question", "");
             String transcript = (String) q.getOrDefault("transcript", "");
 
             evaluationInput.add(HrEvaluationInput.builder()
-                    .questionId(qidStr)
+                    .questionId(qid)
                     .question(questionText)
                     .transcript(transcript)
                     .segmentedData((List) q.getOrDefault("segmentedData", List.of()))
@@ -190,8 +197,8 @@ public class ContestEvaluationUtil {
         ContestAiResponses.ContestEvaluationResponse response = contestAiService.evaluateHrScore(evaluationInput,
                 resumeSummary);
 
-        Map<String, Double> scoreMap = new HashMap<>();
-        Map<String, String> feedbackMap = new HashMap<>();
+        Map<Integer, Double> scoreMap = new HashMap<>();
+        Map<Integer, String> feedbackMap = new HashMap<>();
 
         if (response.getResults() != null) {
             for (var res : response.getResults()) {

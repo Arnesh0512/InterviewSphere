@@ -56,7 +56,7 @@ public class ContestPrompts {
               "results":
                 [
                     {
-                    "question_id":"string",
+                    "question_id":integer,
                     "feedback": "string",
                     "score":number
                     }, ....
@@ -91,7 +91,7 @@ public class ContestPrompts {
               "results":
                 [
                     {
-                    "question_id":"string",
+                    "question_id":integer,
                     "feedback": "string",
                     "score":number
                     }, ....
@@ -127,7 +127,7 @@ public class ContestPrompts {
               "results":
                 [
                     {
-                    "question_id":"string",
+                    "question_id":integer,
                     "feedback": "string",
                     "score":number
                     }, ....
@@ -142,7 +142,7 @@ public class ContestPrompts {
             You will receive a list of dictionaries in the following format:
 
             {
-             "question_id": "string",
+             "question_id": integer,
              "question": "string",
              "transcript": "string",
              "segmented_data":[
@@ -154,7 +154,7 @@ public class ContestPrompts {
 
             It is given candidate was given exactly 1 minute to speak his answer. ##########
 
-            For question_id "1" the question will be:
+            For question_id 1 the question will be:
             "Introduce Yourself"
 
             For this question you will also receive a candidate resume summary.
@@ -171,7 +171,7 @@ public class ContestPrompts {
             - Longer pauses or very short answers may indicate low confidence
             - Smooth continuous speech with moderate pacing indicates higher confidence
 
-            For question_id "1":
+            For question_id 1:
             - Evaluate whether the candidate introduction aligns with the resume summary.
 
             Scoring rules:
@@ -194,7 +194,7 @@ public class ContestPrompts {
               "results":
                 [
                     {
-                    "question_id":"string",
+                    "question_id":integer,
                     "feedback": "string",
                     "score":number
                     }, ....

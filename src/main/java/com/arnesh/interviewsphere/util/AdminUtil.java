@@ -20,7 +20,7 @@ public class AdminUtil {
     /**
      * Selects random coding questions by difficulty matching company tag.
      */
-    public List<String> generateCodingIds(String company, int codingQuestionCount) {
+    public List<Integer> generateCodingIds(String company, int codingQuestionCount) {
         long totalCount = leetCodeQuestionRepository.countByCompaniesContaining(company);
 
         if (totalCount < codingQuestionCount) {

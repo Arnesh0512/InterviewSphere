@@ -130,7 +130,7 @@ public class CodingService {
 
         int sessionNumber = (track.getTotalSessions() != null ? track.getTotalSessions() : 0) + 1;
 
-        List<String> excludeIds = sessionNumber > 1
+        List<Integer> excludeIds = sessionNumber > 1
                 ? codingUtil.getUsedCodingQuestionIds(track.getId())
                 : List.of();
 
@@ -151,15 +151,12 @@ public class CodingService {
         int time = numQuestions * 60; // 60 minutes per question
 
         for (LeetCodeQuestion q : questionsList) {
-            UUID questionUuid;
-            try {
-                questionUuid = UUID.fromString(q.getQuestionId());
-            } catch (Exception e) {
-                questionUuid = UUID.nameUUIDFromBytes(q.getQuestionId().getBytes());
-            }
+            // Change parsing to Integer:
+            Integer qId = q.getQuestionId();
 
+            // In questionBank builder:
             questionBank.add(QuestionSession.Question.builder()
-                    .questionId(questionUuid)
+                    .questionId(qId)
                     .language("")
                     .answer("")
                     .feedback("")
@@ -213,7 +210,7 @@ public class CodingService {
 
         if (session.getQuestionBank() != null) {
             for (QuestionSession.Question q : session.getQuestionBank()) {
-                if (q.getQuestionId() != null && q.getQuestionId().toString().equalsIgnoreCase(request.getQuestionId())) {
+                if (q.getQuestionId() != null && q.getQuestionId().equals(request.getQuestionId())) {
                     q.setLanguage(request.getLanguage());
                     q.setAnswer(request.getAnswer());
                     break;
@@ -287,17 +284,17 @@ public class CodingService {
 
         codingVerificationService.verifySessionStatus2(session);
 
-        List<String> questionIds = new ArrayList<>();
+        List<Integer> questionIds = new ArrayList<>();
         if (session.getQuestionBank() != null) {
             for (QuestionSession.Question q : session.getQuestionBank()) {
                 if (q.getQuestionId() != null) {
-                    questionIds.add(q.getQuestionId().toString());
+                    questionIds.add(q.getQuestionId());
                 }
             }
         }
 
         List<LeetCodeQuestion> questionDocs = leetCodeQuestionRepository.findByQuestionIdIn(questionIds);
-        Map<String, String> questionMap = new HashMap<>();
+        Map<Integer, String> questionMap = new HashMap<>();
         for (LeetCodeQuestion doc : questionDocs) {
             questionMap.put(doc.getQuestionId(), doc.getProblemDescription());
         }
@@ -319,7 +316,7 @@ public class CodingService {
         CodingAiResponses.CodingEvaluationResponse evaluation = codingAiService.evaluateCodingAnswers(enrichedQuestions);
 
         if (evaluation.getFeedbackPerQuestion() != null) {
-            Map<String, CodingAiResponses.QuestionFeedback> feedbackMap = new HashMap<>();
+            Map<Integer, CodingAiResponses.QuestionFeedback> feedbackMap = new HashMap<>();
             for (var item : evaluation.getFeedbackPerQuestion()) {
                 if (item.getQuestionId() != null) {
                     feedbackMap.put(item.getQuestionId(), item);
@@ -327,7 +324,7 @@ public class CodingService {
             }
 
             for (QuestionSession.Question q : session.getQuestionBank()) {
-                String qid = q.getQuestionId() != null ? q.getQuestionId().toString() : "";
+                Integer qid = q.getQuestionId() != null ? q.getQuestionId() : 0;
                 if (feedbackMap.containsKey(qid)) {
                     q.setFeedback(feedbackMap.get(qid).getFeedback());
                     q.setScore(feedbackMap.get(qid).getScore());

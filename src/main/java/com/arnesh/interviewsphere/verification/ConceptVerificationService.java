@@ -83,13 +83,13 @@ public class ConceptVerificationService {
      * Verifies if a given question number is within valid bounds for the session's
      * question bank[cite: 21].
      */
-    public void verifyQuestionNumber(QuestionSession sessionDoc, int questionNumber) {
+    public void verifyQuestionId(QuestionSession sessionDoc, int questionId) {
         List<QuestionSession.Question> questionBank = sessionDoc.getQuestionBank() != null
                 ? sessionDoc.getQuestionBank()
                 : List.of();
 
-        if (questionNumber < 1 || questionNumber > questionBank.size()) {
-            throw new CustomException("Invalid question_number", HttpStatus.BAD_REQUEST);
+        if (questionId < 1 || questionId > questionBank.size()) {
+            throw new CustomException("Invalid question_id", HttpStatus.BAD_REQUEST);
         }
     }
 

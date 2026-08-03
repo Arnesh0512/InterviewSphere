@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class HrEvaluationInput {
-    private String questionId;
+    private Integer questionId;
     private String question;
     private String transcript;
     private List<Object> segmentedData;

@@ -61,11 +61,10 @@ public class QuestionSession {
     @AllArgsConstructor
     @Builder
     public static class Question {
-        private UUID questionId;
-        private Integer questionNumber;
+        @JsonProperty("question_id")
+        private Integer questionId;
+
         private String question;
-        private String questionText;
-        private String userResponse;
         private String answer;
         private String language;
         private String feedback;

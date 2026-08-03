@@ -21,7 +21,7 @@ public class EvaluationResultResponse {
     @AllArgsConstructor
     @Builder
     public static class QuestionEvaluation {
-        private String questionId;
+        private Integer questionId;
         private Double score;
         private String feedback;
     }
