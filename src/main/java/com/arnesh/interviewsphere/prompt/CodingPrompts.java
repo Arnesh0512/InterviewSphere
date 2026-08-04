@@ -6,7 +6,7 @@ public class CodingPrompts {
         // Private constructor to prevent instantiation
     }
 
-    public static final String EVALUATE_CODING_ANSWERS = """
+    public static final String EVALUATE_CODING_ANSWERS_PROMPT = """
             You are a senior technical coding interviewer.
 
             For each coding solution, evaluate:
@@ -44,8 +44,35 @@ public class CodingPrompts {
 
             -question_id provided in input should match in output
             """;
+    public static final String EVALUATE_CODING_ANSWERS_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "feedback_per_question": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "question_id": {"type": "integer"},
+                                "feedback": {"type": "string"},
+                                "score": {"type": "number"}
+                            },
+                            "required": ["question_id", "feedback", "score"]
+                        }
+                    },
+                    "overall_feedback": {"type": "string"},
+                    "overall_score": {"type": "number"}
+                },
+                "required": [
+                    "feedback_per_question",
+                    "overall_feedback",
+                    "overall_score"
+                ]
+            }
 
-    public static final String COMBINED_DIFF_SESSION_FEEDBACK = """
+            """;
+
+    public static final String COMBINED_DIFF_SESSION_FEEDBACK_PROMPT = """
             You are a senior coding interview evaluator.
 
             You will receive multiple completed coding interview sessions.
@@ -96,8 +123,28 @@ public class CodingPrompts {
               }
             }
             """;
+    public static final String COMBINED_DIFF_SESSION_FEEDBACK_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "feedback": {
+                        "type": "object",
+                        "properties": {
+                            "improvement": {"type": "string"},
+                            "weaknesses": {"type": "string"},
+                            "strengths": {"type": "string"},
+                            "recommendations": {"type": "string"}
+                        },
+                        "required": ["improvement", "weaknesses", "strengths", "recommendations"],
+                        "additionalProperties": False
+                    }
+                },
+                "required": ["feedback"],
+                "additionalProperties": False
+            }
+            """;
 
-    public static final String COMBINED_SAME_SESSION_FEEDBACK = """
+    public static final String COMBINED_SAME_SESSION_FEEDBACK_PROMPT = """
             You are a senior coding interview evaluator.
 
             You will receive multiple reattempts of the SAME coding interview session.
@@ -145,6 +192,26 @@ public class CodingPrompts {
                 "strengths": "consistent or emerging strengths",
                 "recommendations": "specific next-step recommendations"
               }
+            }
+            """;
+    public static final String COMBINED_SAME_SESSION_FEEDBACK_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "feedback": {
+                        "type": "object",
+                        "properties": {
+                            "improvement": {"type": "string"},
+                            "weaknesses": {"type": "string"},
+                            "strengths": {"type": "string"},
+                            "recommendations": {"type": "string"}
+                        },
+                        "required": ["improvement", "weaknesses", "strengths", "recommendations"],
+                        "additionalProperties": False
+                    }
+                },
+                "required": ["feedback"],
+                "additionalProperties": False
             }
             """;
 }

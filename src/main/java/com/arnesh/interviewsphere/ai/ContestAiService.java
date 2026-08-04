@@ -1,17 +1,20 @@
 package com.arnesh.interviewsphere.ai;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import com.arnesh.interviewsphere.dto.response.ContestAiResponses.ContestEvaluationResponse;
 import com.arnesh.interviewsphere.exception.CustomException;
 import com.arnesh.interviewsphere.prompt.ContestPrompts;
 import com.arnesh.interviewsphere.service.OpenAiService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +23,7 @@ public class ContestAiService {
     private final OpenAiService openAiService;
     private final ObjectMapper objectMapper;
 
-/**
+    /**
      * Generates a technical summary string from resume text.
      */
     public String generateSummary(String resumeText) {
@@ -28,7 +31,7 @@ public class ContestAiService {
             String content = "Resume Content:\n" + resumeText;
             // Note: Since ContestPrompts.GENERATE_SUMMARY returns a plain string, 
             // we call callChatGpt or directly return the output text without JSON mapping.
-            String rawResponse = openAiService.callChatGpt(ContestPrompts.GENERATE_SUMMARY, content, 0.2);
+            String rawResponse = openAiService.callChatGpt(ContestPrompts.GENERATE_SUMMARY_PROMPT, content, 0.2, ContestPrompts.GENERATE_SUMMARY_RESPONSE);
 
             if (rawResponse == null || rawResponse.isBlank()) {
                 throw new CustomException("Empty response returned by AI", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -48,15 +51,15 @@ public class ContestAiService {
      * questions[cite: 15].
      */
     public ContestEvaluationResponse evaluateResumeScore(
-        String resumeText,
-        List<Map<String, Object>> resumeQuestions,
-        String company,
-        String role,
-        List<String> skills) {
-    try {
-        String questionsText = resumeQuestions.stream()
-                .map(q -> q.get("question_id") + ". " + q.get("question"))
-                .collect(Collectors.joining("\n"));
+            String resumeText,
+            List<Map<String, Object>> resumeQuestions,
+            String company,
+            String role,
+            List<String> skills) {
+        try {
+            String questionsText = resumeQuestions.stream()
+                    .map(q -> q.get("question_id") + ". " + q.get("question"))
+                    .collect(Collectors.joining("\n"));
 
             String content = String.format("""
                     Resume:
@@ -70,10 +73,10 @@ public class ContestAiService {
                     Skills: %s
                     """, resumeText, questionsText, company, role, String.join(", ", skills));
 
-            String rawJson = openAiService.callChatGpt(ContestPrompts.EVALUATE_RESUME_SCORE, content, 0.2);
+            String rawJson = openAiService.callChatGpt(ContestPrompts.EVALUATE_RESUME_SCORE_PROMPT, content, 0.2, ContestPrompts.EVALUATE_RESUME_SCORE_RESPONSE);
             return objectMapper.readValue(rawJson, ContestEvaluationResponse.class);
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException | CustomException e) {
             throw new CustomException("Invalid JSON returned by AI for Resume evaluation",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -85,11 +88,11 @@ public class ContestAiService {
     public ContestEvaluationResponse evaluateCodingScore(Object evaluationInput) {
         try {
             String content = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(evaluationInput);
-            String rawJson = openAiService.callChatGpt(ContestPrompts.EVALUATE_CODING_SCORE, content, 0.2);
+            String rawJson = openAiService.callChatGpt(ContestPrompts.EVALUATE_CODING_SCORE_PROMPT, content, 0.2, ContestPrompts.EVALUATE_CODING_SCORE_RESPONSE);
 
             return objectMapper.readValue(rawJson, ContestEvaluationResponse.class);
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException | CustomException e) {
             throw new CustomException("Invalid JSON returned by AI for Coding evaluation",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -101,18 +104,19 @@ public class ContestAiService {
     public ContestEvaluationResponse evaluateConceptScore(Object evaluationInput) {
         try {
             String content = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(evaluationInput);
-            String rawJson = openAiService.callChatGpt(ContestPrompts.EVALUATE_CONCEPT_SCORE, content, 0.2);
+            String rawJson = openAiService.callChatGpt(ContestPrompts.EVALUATE_CONCEPT_SCORE_PROMPT, content, 0.2, ContestPrompts.EVALUATE_CONCEPT_SCORE_RESPONSE);
 
             return objectMapper.readValue(rawJson, ContestEvaluationResponse.class);
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException | CustomException e) {
             throw new CustomException("Invalid JSON returned by AI for Concept evaluation",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * Evaluates HR transcript answers against candidate resume summary[cite: 15].
+     * Evaluates HR transcript answers against candidate resume summary[cite:
+     * 15].
      */
     public ContestEvaluationResponse evaluateHrScore(Object evaluationInput, String resumeSummary) {
         try {
@@ -121,11 +125,11 @@ public class ContestAiService {
                     "responses", evaluationInput);
 
             String content = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(payload);
-            String rawJson = openAiService.callChatGpt(ContestPrompts.EVALUATE_HR_SCORE, content, 0.2);
+            String rawJson = openAiService.callChatGpt(ContestPrompts.EVALUATE_HR_SCORE_PROMPT, content, 0.2, ContestPrompts.EVALUATE_HR_SCORE_RESPONSE);
 
             return objectMapper.readValue(rawJson, ContestEvaluationResponse.class);
 
-        } catch (Exception e) {
+        } catch (JsonProcessingException | CustomException e) {
             throw new CustomException("Invalid JSON returned by AI for HR evaluation",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }

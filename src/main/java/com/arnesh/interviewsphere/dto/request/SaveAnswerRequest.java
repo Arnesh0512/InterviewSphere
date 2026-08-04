@@ -1,7 +1,7 @@
 package com.arnesh.interviewsphere.dto.request;
 
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SaveAnswerRequest {
 
-    @NotBlank(message = "Question ID is required")
+    @NotNull(message = "Question ID is required")
     private Integer questionId;
 
     private String answer;

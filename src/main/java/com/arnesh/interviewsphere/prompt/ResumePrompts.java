@@ -5,7 +5,7 @@ public class ResumePrompts {
     private ResumePrompts() {
     }
 
-    public static final String PROCESS_RESUME = """
+    public static final String PROCESS_RESUME_PROMPT = """
             You are a professional technical resume analyzer. Analyze the resume and:
               - Identify technical skills and tools
               - Summarize key projects and impact
@@ -22,6 +22,18 @@ public class ResumePrompts {
               Be concise, professional, and factual.
               Do not add information not present in the resume.
               Return only one complete string as summary no json summary or any other format.
+            """;
+    public static final String PROCESS_RESUME_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "summary": {
+                        "type": "string"
+                    }
+                },
+                "required": ["summary"],
+                "additionalProperties": false
+            }
             """;
 
     public static String getGenerateResumeQuestionPrompt(int numQuestions) {
@@ -84,8 +96,23 @@ public class ResumePrompts {
                 {"questions": ["q1", "q2", ..., "qn"]}
                 """, numQuestions);
     }
+    public static String GENERATE_RESUME_QUESTION_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "questions": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": ["questions"],
+                "additionalProperties": false
+            }
+            """;
 
-    public static final String EVALUATE_RESUME_ANSWERS = """
+    public static final String EVALUATE_RESUME_ANSWERS_PROMPT = """
             You are a senior technical interviewer evaluating candidate answers based on his resume summary.
 
             Evaluate each answer based on:
@@ -114,8 +141,36 @@ public class ResumePrompts {
             "overall_score": 7.5
             }
             """;
+    public static final String EVALUATE_RESUME_ANSWERS_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "feedback_per_question": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "question_id": {"type": "integer"},
+                                "feedback": {"type": "string"},
+                                "score": {"type": "number"}
+                            },
+                            "required": ["question_id", "feedback", "score"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "overall_feedback": {"type": "string"},
+                    "overall_score": {"type": "number"}
+                },
+                "required": [
+                    "feedback_per_question",
+                    "overall_feedback",
+                    "overall_score"
+                ],
+                "additionalProperties": false
+            }
+            """;
 
-    public static final String COMBINED_DIFF_SESSION_FEEDBACK = """
+    public static final String COMBINED_DIFF_SESSION_FEEDBACK_PROMPT = """
             You are a senior technical interview evaluator.
 
             You will receive:
@@ -161,8 +216,28 @@ public class ResumePrompts {
               }
             }
             """;
+    public static final String COMBINED_DIFF_SESSION_FEEDBACK_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "feedback": {
+                        "type": "object",
+                        "properties": {
+                            "improvement": {"type": "string"},
+                            "weaknesses": {"type": "string"},
+                            "strengths": {"type": "string"},
+                            "recommendations": {"type": "string"}
+                        },
+                        "required": ["improvement", "weaknesses", "strengths", "recommendations"],
+                        "additionalProperties": False
+                    }
+                },
+                "required": ["feedback"],
+                "additionalProperties": False
+            }
+            """;
 
-    public static final String COMBINED_SAME_SESSION_FEEDBACK = """
+    public static final String COMBINED_SAME_SESSION_FEEDBACK_PROMPT = """
             You are a senior technical interview evaluator.
 
             You will receive:
@@ -207,6 +282,26 @@ public class ResumePrompts {
                 "strengths": "consistent or emerging strengths",
                 "recommendations": "specific next-step recommendations"
               }
+            }
+            """;
+    public static final String COMBINED_SAME_SESSION_FEEDBACK_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "feedback": {
+                        "type": "object",
+                        "properties": {
+                            "improvement": {"type": "string"},
+                            "weaknesses": {"type": "string"},
+                            "strengths": {"type": "string"},
+                            "recommendations": {"type": "string"}
+                        },
+                        "required": ["improvement", "weaknesses", "strengths", "recommendations"],
+                        "additionalProperties": False
+                    }
+                },
+                "required": ["feedback"],
+                "additionalProperties": False
             }
             """;
 }

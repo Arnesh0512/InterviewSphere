@@ -1,17 +1,24 @@
 package com.arnesh.interviewsphere.ai;
 
-import com.arnesh.interviewsphere.dto.response.GithubAiResponses.*;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import com.arnesh.interviewsphere.dto.response.GithubAiResponses.CombinedFeedbackDetails;
+import com.arnesh.interviewsphere.dto.response.GithubAiResponses.CombinedFeedbackResponse;
+import com.arnesh.interviewsphere.dto.response.GithubAiResponses.GithubEvaluationResponse;
+import com.arnesh.interviewsphere.dto.response.GithubAiResponses.ProcessRepoResponse;
+import com.arnesh.interviewsphere.dto.response.GithubAiResponses.QuestionListResponse;
 import com.arnesh.interviewsphere.exception.CustomException;
 import com.arnesh.interviewsphere.prompt.GithubPrompts;
 import com.arnesh.interviewsphere.service.OpenAiService;
 import com.arnesh.interviewsphere.util.GithubUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +28,7 @@ public class GithubAiService {
     private final GithubUtil githubUtil;
     private final ObjectMapper objectMapper;
 
-/**
+    /**
      * Fetches details and summarizes a GitHub repository.
      */
     public ProcessRepoResponse processRepo(String selectedRepoLink) {
@@ -41,7 +48,7 @@ public class GithubAiService {
                 """, details.getRepoName(), details.getDescription(), details.getLanguages(), details.getReadme());
 
         try {
-            String summaryText = openAiService.callChatGpt(GithubPrompts.PROCESS_REPO, content, 0.2);
+            String summaryText = openAiService.callChatGpt(GithubPrompts.PROCESS_REPO_PROMPT, content, 0.2, GithubPrompts.PROCESS_REPO_RESPONSE);
 
             if (summaryText == null || summaryText.isBlank()) {
                 throw new CustomException("Empty summary returned by AI", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -78,7 +85,7 @@ public class GithubAiService {
                     """, repoSummary,
                     objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(previousSessions));
 
-            String rawJson = openAiService.callChatGpt(prompt, content, 0.4);
+            String rawJson = openAiService.callChatGpt(prompt, content, 0.4, GithubPrompts.GENERATE_GITHUB_QUESTION_RESPONSE);
             QuestionListResponse response = objectMapper.readValue(rawJson, QuestionListResponse.class);
 
             if (response == null || response.getQuestions() == null) {
@@ -91,9 +98,7 @@ public class GithubAiService {
 
             return response;
 
-        } catch (CustomException ce) {
-            throw ce;
-        } catch (Exception e) {
+        } catch (JsonProcessingException | CustomException e) {
             throw new CustomException("Invalid JSON returned by AI", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -111,7 +116,7 @@ public class GithubAiService {
                     %s
                     """, repoSummary, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(questionBank));
 
-            String rawJson = openAiService.callChatGpt(GithubPrompts.EVALUATE_GITHUB_ANSWERS, content, 0.2);
+            String rawJson = openAiService.callChatGpt(GithubPrompts.EVALUATE_GITHUB_ANSWERS_PROMPT, content, 0.2, GithubPrompts.EVALUATE_GITHUB_ANSWERS_RESPONSE);
             GithubEvaluationResponse response = objectMapper.readValue(rawJson, GithubEvaluationResponse.class);
 
             if (response == null || response.getFeedbackPerQuestion() == null) {
@@ -120,9 +125,7 @@ public class GithubAiService {
 
             return response;
 
-        } catch (CustomException ce) {
-            throw ce;
-        } catch (Exception e) {
+        } catch (JsonProcessingException | CustomException e) {
             throw new CustomException("Invalid JSON returned by AI", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -142,7 +145,7 @@ public class GithubAiService {
                     %s
                     """, repoSummary, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(sessionData));
 
-            String rawJson = openAiService.callChatGpt(GithubPrompts.COMBINED_DIFF_SESSION_FEEDBACK, content, 0.2);
+            String rawJson = openAiService.callChatGpt(GithubPrompts.COMBINED_DIFF_SESSION_FEEDBACK_PROMPT, content, 0.2, GithubPrompts.COMBINED_DIFF_SESSION_FEEDBACK_RESPONSE);
             CombinedFeedbackResponse result = objectMapper.readValue(rawJson, CombinedFeedbackResponse.class);
 
             if (result == null || result.getFeedback() == null) {
@@ -151,16 +154,14 @@ public class GithubAiService {
 
             return result.getFeedback();
 
-        } catch (CustomException ce) {
-            throw ce;
-        } catch (Exception e) {
+        } catch (JsonProcessingException | CustomException e) {
             throw new CustomException("Invalid JSON returned by AI", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * Generates combined feedback across reattempts of the SAME GitHub interview
-     * session.
+     * Generates combined feedback across reattempts of the SAME GitHub
+     * interview session.
      */
     public CombinedFeedbackDetails generateGithubCombinedSameSessionFeedback(
             String repoSummary,
@@ -174,7 +175,7 @@ public class GithubAiService {
                     %s
                     """, repoSummary, objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(sessionData));
 
-            String rawJson = openAiService.callChatGpt(GithubPrompts.COMBINED_SAME_SESSION_FEEDBACK, content, 0.2);
+            String rawJson = openAiService.callChatGpt(GithubPrompts.COMBINED_SAME_SESSION_FEEDBACK_PROMPT, content, 0.2, GithubPrompts.COMBINED_SAME_SESSION_FEEDBACK_RESPONSE);
             CombinedFeedbackResponse result = objectMapper.readValue(rawJson, CombinedFeedbackResponse.class);
 
             if (result == null || result.getFeedback() == null) {
@@ -183,9 +184,7 @@ public class GithubAiService {
 
             return result.getFeedback();
 
-        } catch (CustomException ce) {
-            throw ce;
-        } catch (Exception e) {
+        } catch (JsonProcessingException | CustomException e) {
             throw new CustomException("Invalid JSON returned by AI", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

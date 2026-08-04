@@ -6,6 +6,7 @@ import com.arnesh.interviewsphere.dto.response.CodingAiResponses.CombinedFeedbac
 import com.arnesh.interviewsphere.exception.CustomException;
 import com.arnesh.interviewsphere.prompt.CodingPrompts;
 import com.arnesh.interviewsphere.service.OpenAiService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class CodingAiService {
         try {
             String content = "Coding Questions and Answers:\n\n"
                     + objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(questions);
-            String rawJson = openAiService.callChatGpt(CodingPrompts.EVALUATE_CODING_ANSWERS, content, 0.2);
+            String rawJson = openAiService.callChatGpt(CodingPrompts.EVALUATE_CODING_ANSWERS_PROMPT, content, 0.2, CodingPrompts.EVALUATE_CODING_ANSWERS_RESPONSE);
 
             CodingEvaluationResponse response = objectMapper.readValue(rawJson, CodingEvaluationResponse.class);
 
@@ -38,9 +39,7 @@ public class CodingAiService {
 
             return response;
 
-        } catch (CustomException ce) {
-            throw ce;
-        } catch (Exception e) {
+        } catch (JsonProcessingException | CustomException e) {
             throw new CustomException("Invalid JSON returned by AI for coding evaluation",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -53,7 +52,7 @@ public class CodingAiService {
         try {
             String content = "Session wise Coding Attempts:\n"
                     + objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(sessionData);
-            String rawJson = openAiService.callChatGpt(CodingPrompts.COMBINED_DIFF_SESSION_FEEDBACK, content, 0.2);
+            String rawJson = openAiService.callChatGpt(CodingPrompts.COMBINED_DIFF_SESSION_FEEDBACK_PROMPT, content, 0.2, CodingPrompts.COMBINED_DIFF_SESSION_FEEDBACK_RESPONSE);
 
             CombinedFeedbackResponse result = objectMapper.readValue(rawJson, CombinedFeedbackResponse.class);
 
@@ -63,9 +62,7 @@ public class CodingAiService {
 
             return result.getFeedback();
 
-        } catch (CustomException ce) {
-            throw ce;
-        } catch (Exception e) {
+        } catch (JsonProcessingException | CustomException e) {
             throw new CustomException("Invalid JSON returned by AI", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -77,7 +74,7 @@ public class CodingAiService {
         try {
             String content = "Session wise Coding Attempts:\n"
                     + objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(sessionData);
-            String rawJson = openAiService.callChatGpt(CodingPrompts.COMBINED_SAME_SESSION_FEEDBACK, content, 0.2);
+            String rawJson = openAiService.callChatGpt(CodingPrompts.COMBINED_SAME_SESSION_FEEDBACK_PROMPT, content, 0.2, CodingPrompts.COMBINED_SAME_SESSION_FEEDBACK_RESPONSE);
 
             CombinedFeedbackResponse result = objectMapper.readValue(rawJson, CombinedFeedbackResponse.class);
 
@@ -87,9 +84,7 @@ public class CodingAiService {
 
             return result.getFeedback();
 
-        } catch (CustomException ce) {
-            throw ce;
-        } catch (Exception e) {
+        } catch (JsonProcessingException | CustomException e) {
             throw new CustomException("Invalid JSON returned by AI", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

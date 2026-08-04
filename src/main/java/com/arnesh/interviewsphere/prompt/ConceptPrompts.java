@@ -69,7 +69,20 @@ public class ConceptPrompts {
                 """, numQuestions, numQuestions);
     }
 
-    public static final String EVALUATE_CONCEPT_TOPIC_ANSWERS = """
+    public static final String GENERATE_CONCEPT_TOPIC_QUESTIONS_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "questions": {
+                        "type": "array",
+                        "items": {"type": "string"}
+                    }
+                },
+                "required": ["questions"]
+            }
+            """;
+
+    public static final String EVALUATE_CONCEPT_TOPIC_ANSWERS_PROMPT = """
             You are a senior computer science technical interviewer.
 
             You are evaluating answers related to specific Computer Science topics.
@@ -113,8 +126,38 @@ public class ConceptPrompts {
                 "overall_score": 7.5
             }
             """;
+    public static final String EVALUATE_CONCEPT_TOPIC_ANSWERS_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "feedback_per_question": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "question_id": {"type": "integer"},
+                                "feedback": {"type": "string"},
+                                "score": {"type": "number"}
+                            },
+                            "required": [
+                                "question_id",
+                                "feedback",
+                                "score"
+                            ]
+                        }
+                    },
+                    "overall_feedback": {"type": "string"},
+                    "overall_score": {"type": "number"}
+                },
+                "required": [
+                    "feedback_per_question",
+                    "overall_feedback",
+                    "overall_score"
+                ]
+            }
+            """;
 
-    public static final String COMBINED_DIFF_SESSION_FEEDBACK = """
+    public static final String COMBINED_DIFF_SESSION_FEEDBACK_PROMPT = """
             You are a senior technical interview evaluator.
 
             You will receive:
@@ -162,8 +205,28 @@ public class ConceptPrompts {
               }
             }
             """;
+    public static final String COMBINED_DIFF_SESSION_FEEDBACK_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "feedback": {
+                        "type": "object",
+                        "properties": {
+                            "improvement": {"type": "string"},
+                            "weaknesses": {"type": "string"},
+                            "strengths": {"type": "string"},
+                            "recommendations": {"type": "string"}
+                        },
+                        "required": ["improvement", "weaknesses", "strengths", "recommendations"],
+                        "additionalProperties": False
+                    }
+                },
+                "required": ["feedback"],
+                "additionalProperties": False
+            }
+            """;
 
-    public static final String COMBINED_SAME_SESSION_FEEDBACK = """
+    public static final String COMBINED_SAME_SESSION_FEEDBACK_PROMPT = """
             You are a senior technical interview evaluator.
 
             You will receive:
@@ -208,6 +271,26 @@ public class ConceptPrompts {
                 "strengths": "consistent or emerging strengths",
                 "recommendations": "specific next-step recommendations"
               }
+            }
+            """;
+    public static final String COMBINED_SAME_SESSION_FEEDBACK_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "feedback": {
+                        "type": "object",
+                        "properties": {
+                            "improvement": {"type": "string"},
+                            "weaknesses": {"type": "string"},
+                            "strengths": {"type": "string"},
+                            "recommendations": {"type": "string"}
+                        },
+                        "required": ["improvement", "weaknesses", "strengths", "recommendations"],
+                        "additionalProperties": False
+                    }
+                },
+                "required": ["feedback"],
+                "additionalProperties": False
             }
             """;
 }

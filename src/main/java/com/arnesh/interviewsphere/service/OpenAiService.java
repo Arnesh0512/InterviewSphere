@@ -6,11 +6,9 @@ import com.arnesh.interviewsphere.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
-import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -37,37 +35,38 @@ public class OpenAiService {
     private final WebClient.Builder webClientBuilder;
 
     /**
-     * Executes structured Chat completions using GPT models[cite: 9].
+     * Executes structured Chat completions using GPT models.
      */
-    public String callChatGpt(String systemPrompt, String userContent, double temperature) {
+    public String callChatGpt(String systemPrompt, String userContent, double temperature, String jsonSchema) {
         try {
-            // In Spring AI 1.0.0-M1, ResponseFormat takes a String parameter
-            // ("json_object")
-            OpenAiApi.ChatCompletionRequest.ResponseFormat responseFormat = new OpenAiApi.ChatCompletionRequest.ResponseFormat(
-                    "json_object");
+            // Use Spring AI 2.0's built-in OpenAiChatModel.ResponseFormat definition
+            OpenAiChatModel.ResponseFormat responseFormat = OpenAiChatModel.ResponseFormat.builder()
+                    .type(OpenAiChatModel.ResponseFormat.Type.JSON_SCHEMA)
+                    .jsonSchema(jsonSchema)
+                    .build();
 
             OpenAiChatOptions options = OpenAiChatOptions.builder()
-                    .withModel("gpt-4o-mini")
-                    .withTemperature((float) temperature)
-                    .withResponseFormat(responseFormat)
+                    .model("gpt-4o-mini")
+                    .temperature(temperature)
+                    .responseFormat(responseFormat)
                     .build();
 
             Prompt prompt = new Prompt(
-                    List.of(new SystemMessage(systemPrompt), new UserMessage(userContent)),
-                    options);
+                List.of(
+                    new SystemMessage(systemPrompt),
+                    new UserMessage(userContent)
+                ),
+                options
+            );
 
-            ChatResponse response = chatModel.call(prompt);
-            return response.getResult().getOutput().getContent();
+            return chatModel.call(prompt).getResult().getOutput().getText();
 
         } catch (Exception e) {
-            throw new CustomException("Failed to call ChatGPT: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException("AI call failed: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * Transcribes WAV audio files using OpenAI Audio API and computes audio
-     * duration[cite: 9].
-     */
+
     public AudioTranscriptionResponse callAudioModel1(String wavPath) {
         File file = new File(wavPath);
         if (!file.exists()) {
@@ -121,9 +120,7 @@ public class OpenAiService {
                 .build();
     }
 
-    /**
-     * Helper to compute WAV audio duration in seconds.
-     */
+
     private double getWavDurationInSeconds(File file) {
         try (AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(file)) {
             AudioFormat format = audioInputStream.getFormat();

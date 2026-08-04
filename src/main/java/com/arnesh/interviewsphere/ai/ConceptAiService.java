@@ -41,7 +41,7 @@ public class ConceptAiService {
                     """, String.join(", ", topics),
                     objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(previousSessions));
 
-            String rawJson = openAiService.callChatGpt(prompt, content, 0.4);
+            String rawJson = openAiService.callChatGpt(prompt, content, 0.4, ConceptPrompts.GENERATE_CONCEPT_TOPIC_QUESTIONS_RESPONSE);
             QuestionListResponse response = objectMapper.readValue(rawJson, QuestionListResponse.class);
 
             if (response == null || response.getQuestions() == null) {
@@ -73,7 +73,7 @@ public class ConceptAiService {
                     """, String.join(", ", topics),
                     objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(questionBank));
 
-            String rawJson = openAiService.callChatGpt(ConceptPrompts.EVALUATE_CONCEPT_TOPIC_ANSWERS, content, 0.2);
+            String rawJson = openAiService.callChatGpt(ConceptPrompts.EVALUATE_CONCEPT_TOPIC_ANSWERS_PROMPT, content, 0.2, ConceptPrompts.EVALUATE_CONCEPT_TOPIC_ANSWERS_RESPONSE);
             ConceptEvaluationResponse response = objectMapper.readValue(rawJson, ConceptEvaluationResponse.class);
 
             if (response == null || response.getFeedbackPerQuestion() == null) {
@@ -106,7 +106,7 @@ public class ConceptAiService {
                     """, topics.toString(),
                     objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(sessionData));
 
-            String rawJson = openAiService.callChatGpt(ConceptPrompts.COMBINED_DIFF_SESSION_FEEDBACK, content, 0.2);
+            String rawJson = openAiService.callChatGpt(ConceptPrompts.COMBINED_DIFF_SESSION_FEEDBACK_PROMPT, content, 0.2, ConceptPrompts.COMBINED_DIFF_SESSION_FEEDBACK_RESPONSE);
             CombinedFeedbackResponse result = objectMapper.readValue(rawJson, CombinedFeedbackResponse.class);
 
             if (result == null || result.getFeedback() == null) {
@@ -139,7 +139,7 @@ public class ConceptAiService {
                     """, topics.toString(),
                     objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(sessionData));
 
-            String rawJson = openAiService.callChatGpt(ConceptPrompts.COMBINED_SAME_SESSION_FEEDBACK, content, 0.2);
+            String rawJson = openAiService.callChatGpt(ConceptPrompts.COMBINED_SAME_SESSION_FEEDBACK_PROMPT, content, 0.2, ConceptPrompts.COMBINED_SAME_SESSION_FEEDBACK_RESPONSE);
             CombinedFeedbackResponse result = objectMapper.readValue(rawJson, CombinedFeedbackResponse.class);
 
             if (result == null || result.getFeedback() == null) {

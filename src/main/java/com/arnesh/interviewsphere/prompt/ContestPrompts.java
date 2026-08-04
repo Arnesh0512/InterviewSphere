@@ -5,7 +5,7 @@ public class ContestPrompts {
     private ContestPrompts() {
     }
 
-    public static final String GENERATE_SUMMARY = """
+    public static final String GENERATE_SUMMARY_PROMPT = """
             You are a professional technical resume analyzer. Analyze the resume and:
               - Identify technical skills and tools
               - Summarize key projects and impact
@@ -23,8 +23,19 @@ public class ContestPrompts {
               Do not add information not present in the resume.
               Return only one complete string as summary no json summary or any other format.
             """;
+    public static final String GENERATE_SUMMARY_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "summary": {
+                        "type": "string"
+                    }
+                },
+                "required": ["summary"]
+            }
+            """;
 
-    public static final String EVALUATE_RESUME_SCORE = """
+    public static final String EVALUATE_RESUME_SCORE_PROMPT = """
             You are a senior technical interviewer.
 
             You will receive:
@@ -64,8 +75,36 @@ public class ContestPrompts {
                 "overall_feedback": "string"
             }
             """;
+    public static final String EVALUATE_RESUME_SCORE_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "question_id": {"type": "integer"},
+                                "feedback": {"type": "string"},
+                                "score": {"type": "number"}
+                            },
+                            "required": [
+                                "question_id",
+                                "feedback",
+                                "score"
+                            ]
+                        }
+                    },
+                    "overall_feedback": {"type": "string"}
+                },
+                "required": [
+                    "results",
+                    "overall_feedback"
+                ]
+            }
+            """;
 
-    public static final String EVALUATE_CODING_SCORE = """
+    public static final String EVALUATE_CODING_SCORE_PROMPT = """
             You are a senior coding interviewer.
 
             You will receive list of such dictionaries
@@ -99,8 +138,36 @@ public class ContestPrompts {
                 "overall_feedback": "string"
             }
             """;
+    public static final String EVALUATE_CODING_SCORE_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "question_id": {"type": "integer"},
+                                "feedback": {"type": "string"},
+                                "score": {"type": "number"}
+                            },
+                            "required": [
+                                "question_id",
+                                "feedback",
+                                "score"
+                            ]
+                        }
+                    },
+                    "overall_feedback": {"type": "string"}
+                },
+                "required": [
+                    "results",
+                    "overall_feedback"
+                ]
+            }
+            """;
 
-    public static final String EVALUATE_CONCEPT_SCORE = """
+    public static final String EVALUATE_CONCEPT_SCORE_PROMPT = """
             You are a senior technical interviewer.
 
             You will receive list of such dictionaries
@@ -135,8 +202,36 @@ public class ContestPrompts {
                 "overall_feedback": "string"
             }
             """;
+    public static final String EVALUATE_CONCEPT_SCORE_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "question_id": {"type": "integer"},
+                                "feedback": {"type": "string"},
+                                "score": {"type": "number"}
+                            },
+                            "required": [
+                                "question_id",
+                                "feedback",
+                                "score"
+                            ]
+                        }
+                    },
+                    "overall_feedback": {"type": "string"}
+                },
+                "required": [
+                    "results",
+                    "overall_feedback"
+                ]
+            }
+            """;
 
-    public static final String EVALUATE_HR_SCORE = """
+    public static final String EVALUATE_HR_SCORE_PROMPT = """
             You are a senior HR interviewer evaluating candidate responses.
 
             You will receive a list of dictionaries in the following format:
@@ -200,6 +295,34 @@ public class ContestPrompts {
                     }, ....
                 ],
                 "overall_feedback": "string"
+            }
+            """;
+    public static final String EVALUATE_HR_SCORE_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "question_id": {"type": "integer"},
+                                "feedback": {"type": "string"},
+                                "score": {"type": "number"}
+                            },
+                            "required": [
+                                "question_id",
+                                "feedback",
+                                "score"
+                            ]
+                        }
+                    },
+                    "overall_feedback": {"type": "string"}
+                },
+                "required": [
+                    "results",
+                    "overall_feedback"
+                ]
             }
             """;
 }

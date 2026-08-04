@@ -5,7 +5,7 @@ public class GithubPrompts {
     private GithubPrompts() {
     }
 
-    public static final String PROCESS_REPO = """
+    public static final String PROCESS_REPO_PROMPT = """
             You are a professional GitHub repository analyzer.
 
             Analyze the repository based on:
@@ -26,6 +26,17 @@ public class GithubPrompts {
             Be factual.
             Do NOT invent features not present.
             Return only one complete string summary.
+            """;
+    public static final String PROCESS_REPO_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "summary": {
+                        "type": "string"
+                    }
+                },
+                "required": ["summary"]
+            }
             """;
 
     public static String getGenerateGithubQuestionPrompt(int numQuestions) {
@@ -94,8 +105,22 @@ public class GithubPrompts {
                 {"questions": ["q1", "q2", ..., "qn"]}
                 """, numQuestions);
     }
+    public static String GENERATE_GITHUB_QUESTION_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "questions": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": ["questions"]
+            }
+            """;
 
-    public static final String EVALUATE_GITHUB_ANSWERS = """
+    public static final String EVALUATE_GITHUB_ANSWERS_PROMPT = """
             You are a senior software architect and technical interviewer.
 
             You are evaluating answers related to a GitHub repository project based on his provided repository summary.
@@ -134,8 +159,38 @@ public class GithubPrompts {
                 "overall_score": 7.5
             }
             """;
+    public static final String EVALUATE_GITHUB_ANSWERS_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "feedback_per_question": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "question_id": {"type": "integer"},
+                                "feedback": {"type": "string"},
+                                "score": {"type": "number"}
+                            },
+                            "required": [
+                                "question_id",
+                                "feedback",
+                                "score"
+                            ]
+                        }
+                    },
+                    "overall_feedback": {"type": "string"},
+                    "overall_score": {"type": "number"}
+                },
+                "required": [
+                    "feedback_per_question",
+                    "overall_feedback",
+                    "overall_score"
+                ]
+            }
+            """;
 
-    public static final String COMBINED_DIFF_SESSION_FEEDBACK = """
+    public static final String COMBINED_DIFF_SESSION_FEEDBACK_PROMPT = """
             You are a senior technical interview evaluator.
 
             You will receive:
@@ -183,8 +238,28 @@ public class GithubPrompts {
               }
             }
             """;
+    public static final String COMBINED_DIFF_SESSION_FEEDBACK_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "feedback": {
+                        "type": "object",
+                        "properties": {
+                            "improvement": {"type": "string"},
+                            "weaknesses": {"type": "string"},
+                            "strengths": {"type": "string"},
+                            "recommendations": {"type": "string"}
+                        },
+                        "required": ["improvement", "weaknesses", "strengths", "recommendations"],
+                        "additionalProperties": False
+                    }
+                },
+                "required": ["feedback"],
+                "additionalProperties": False
+            }
+            """;
 
-    public static final String COMBINED_SAME_SESSION_FEEDBACK = """
+    public static final String COMBINED_SAME_SESSION_FEEDBACK_PROMPT = """
             You are a senior technical interview evaluator.
 
             You will receive:
@@ -230,6 +305,26 @@ public class GithubPrompts {
                 "strengths": "consistent or emerging strengths",
                 "recommendations": "specific next-step recommendations"
               }
+            }
+            """;
+    public static final String COMBINED_SAME_SESSION_FEEDBACK_RESPONSE = """
+            {
+                "type": "object",
+                "properties": {
+                    "feedback": {
+                        "type": "object",
+                        "properties": {
+                            "improvement": {"type": "string"},
+                            "weaknesses": {"type": "string"},
+                            "strengths": {"type": "string"},
+                            "recommendations": {"type": "string"}
+                        },
+                        "required": ["improvement", "weaknesses", "strengths", "recommendations"],
+                        "additionalProperties": False
+                    }
+                },
+                "required": ["feedback"],
+                "additionalProperties": False
             }
             """;
 }

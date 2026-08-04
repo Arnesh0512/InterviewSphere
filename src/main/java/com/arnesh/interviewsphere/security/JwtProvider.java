@@ -1,18 +1,20 @@
 package com.arnesh.interviewsphere.security;
 
-import com.arnesh.interviewsphere.exception.CustomException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
+import javax.crypto.SecretKey;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import com.arnesh.interviewsphere.exception.CustomException;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtProvider {
@@ -28,12 +30,9 @@ public class JwtProvider {
      * Encodes payload dictionary into a signed JWT token.
      */
     public String createAccessToken(Map<String, Object> payload) {
-        Claims claims = Jwts.claims();
-        claims.putAll(payload);
-
         return Jwts.builder()
-                .setClaims(claims)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .claims(payload)
+                .signWith(getSigningKey()) // JJWT 0.12+ infers algorithm automatically from SecretKey
                 .compact();
     }
 
@@ -42,11 +41,11 @@ public class JwtProvider {
      */
     public Claims verifyAccessToken(String token) {
         try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
+            Claims claims = Jwts.parser()
+                    .verifyWith(getSigningKey())
                     .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+                    .parseSignedClaims(token)
+                    .getPayload();
 
             if (claims.getExpiration() == null) {
                 throw new CustomException("Token has no expiry", HttpStatus.UNAUTHORIZED);
@@ -70,7 +69,7 @@ public class JwtProvider {
         payload.put(idKey, id.toString());
         payload.put("email", email);
         payload.put("role", role);
-        
+
         // Setting an expiration matching dev expectations (~June 30 of current/next year)
         java.time.LocalDate today = java.time.LocalDate.now();
         int year = today.getYear() + (today.getMonthValue() > 6 ? 1 : 0);

@@ -5,20 +5,32 @@ public class AdminPrompts {
     private AdminPrompts() {
     }
 
-    public static final String VALIDATE_ROLE_SKILLS = """
-            You are an expert technical recruiter.
+    public static final String VALIDATE_ROLE_SKILLS_PROMPT = """
+		You are an expert technical recruiter.
 
-            You will be given a <role> required for a position
-            and a <list of skills>.
+		You will be given a <role> required for a position
+		and a <list of skills>.
 
-            Determine if these skills are appropriate for the role.
+		Determine if these skills are appropriate for the role.
 
-            Return strictly JSON:
+		Return strictly JSON:
 
-            {"valid": true/false}
-            """;
+		{"valid": true/false}
+		""";
+    public static final String VALIDATE_ROLE_SKILLS_RESPONSE = """
+        {
+            "type": "object",
+            "properties": {
+                "valid": {
+                        "type": "boolean"
+                }
+            },
+            "required": ["valid"],
+                "additionalProperties": false
+        }
+        """;
 
-    public static final String GENERATE_RESUME_QUESTIONS = """
+    public static final String GENERATE_RESUME_QUESTIONS_PROMPT = """
             You are an expert technical recruiter designing automated resume screening for a company.
 
             Generate resume screening questions that can be answered directly by analyzing
@@ -47,8 +59,20 @@ public class AdminPrompts {
             "questions": ["q1", "q2", "q3"]
             }
             """;
+    public static final String GENERATE_RESUME_QUESTIONS_RESPONSE = """
+		{
+			"type": "object",
+			"properties": {
+				"questions": {
+					"type": "array",
+					"items": {"type": "string"}
+				}
+			},
+			"required": ["questions"]
+		}
+		""";
 
-    public static final String GENERATE_CONCEPT_QUESTIONS = """
+    public static final String GENERATE_CONCEPT_QUESTIONS_PROMPT = """
             You are a senior technical interviewer.
 
             Generate concept interview questions that test
@@ -60,8 +84,20 @@ public class AdminPrompts {
             "questions": ["q1","q2","q3"]
             }
             """;
+    public static final String GENERATE_CONCEPT_QUESTIONS_RESPONSE = """
+		{
+			"type": "object",
+			"properties": {
+				"questions": {
+					"type": "array",
+					"items": {"type": "string"}
+				}
+			},
+			"required": ["questions"]
+		}
+		""";
 
-    public static final String GENERATE_HR_QUESTIONS = """
+    public static final String GENERATE_HR_QUESTIONS_PROMPT = """
             You are an HR interviewer.
 
             Generate HR interview questions that evaluate:
@@ -76,4 +112,16 @@ public class AdminPrompts {
             "questions": ["q1","q2","q3"]
             }
             """;
+    public static final String GENERATE_HR_QUESTIONS_RESPONSE = """
+		{
+			"type": "object",
+			"properties": {
+				"questions": {
+					"type": "array",
+					"items": {"type": "string"}
+				}
+			},
+			"required": ["questions"]
+		}
+		""";
 }
