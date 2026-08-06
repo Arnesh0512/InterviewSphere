@@ -25,6 +25,11 @@ public enum Language {
         this.value = value;
     }
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
     public static Language fromValue(String value) {
         if (value == null) {
             throw new IllegalArgumentException("Language value cannot be null");

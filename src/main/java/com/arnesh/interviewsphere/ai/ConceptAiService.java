@@ -1,19 +1,22 @@
 package com.arnesh.interviewsphere.ai;
 
-import com.arnesh.interviewsphere.dto.response.ConceptAiResponses.ConceptEvaluationResponse;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import com.arnesh.interviewsphere.dto.response.ConceptAiResponses.CombinedFeedbackDetails;
 import com.arnesh.interviewsphere.dto.response.ConceptAiResponses.CombinedFeedbackResponse;
+import com.arnesh.interviewsphere.dto.response.ConceptAiResponses.ConceptEvaluationResponse;
 import com.arnesh.interviewsphere.dto.response.ConceptAiResponses.QuestionListResponse;
 import com.arnesh.interviewsphere.exception.CustomException;
 import com.arnesh.interviewsphere.prompt.ConceptPrompts;
 import com.arnesh.interviewsphere.service.OpenAiService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -50,9 +53,7 @@ public class ConceptAiService {
 
             return response;
 
-        } catch (CustomException ce) {
-            throw ce;
-        } catch (Exception e) {
+        } catch (JsonProcessingException | CustomException e) {
             throw new CustomException("Invalid JSON returned by AI", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -82,9 +83,7 @@ public class ConceptAiService {
 
             return response;
 
-        } catch (CustomException ce) {
-            throw ce;
-        } catch (Exception e) {
+        } catch (JsonProcessingException | CustomException e) {
             throw new CustomException("Invalid JSON returned by AI", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -115,9 +114,7 @@ public class ConceptAiService {
 
             return result.getFeedback();
 
-        } catch (CustomException ce) {
-            throw ce;
-        } catch (Exception e) {
+        } catch (JsonProcessingException | CustomException e) {
             throw new CustomException("Invalid JSON returned by AI", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -148,9 +145,7 @@ public class ConceptAiService {
 
             return result.getFeedback();
 
-        } catch (CustomException ce) {
-            throw ce;
-        } catch (Exception e) {
+        } catch (JsonProcessingException | CustomException e) {
             throw new CustomException("Invalid JSON returned by AI", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

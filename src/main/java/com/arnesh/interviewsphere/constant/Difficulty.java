@@ -17,6 +17,11 @@ public enum Difficulty {
         this.value = value;
     }
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
     public static Difficulty fromValue(String value) {
         if (value == null) {
             throw new IllegalArgumentException("Difficulty value cannot be null");

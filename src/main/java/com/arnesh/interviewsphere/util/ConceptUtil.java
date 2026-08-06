@@ -68,9 +68,7 @@ public class ConceptUtil {
 
             if (s.getQuestionBank() != null) {
                 for (QuestionSession.Question q : s.getQuestionBank()) {
-                    if (q.getAnswer() != null && !q.getAnswer().isBlank() && q.getQuestion() != null) {
                         questionAnswerMap.put(q.getQuestion(), q.getAnswer());
-                    }
                 }
             }
 

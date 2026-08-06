@@ -203,6 +203,11 @@ public enum Topic {
         this.value = value;
     }
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
     public static Topic fromValue(String value) {
         if (value == null) {
             throw new IllegalArgumentException("Topic value cannot be null");

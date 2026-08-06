@@ -1,6 +1,5 @@
 package com.arnesh.interviewsphere.entity;
 
-import com.arnesh.interviewsphere.constant.Topic;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,12 +34,10 @@ public class PracticeConceptTrack {
     @JsonProperty("concept_number")
     private Integer conceptNumber;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "concept_track_topics", joinColumns = @JoinColumn(name = "track_id"))
-    @Column(name = "topic")
-    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(name = "topics", columnDefinition = "text[]")
     @Builder.Default
-    private List<Topic> topics = new ArrayList<>();
+    private List<String> topics = new ArrayList<>();
 
     @Column(name = "total_sessions")
     @JsonProperty("total_sessions")

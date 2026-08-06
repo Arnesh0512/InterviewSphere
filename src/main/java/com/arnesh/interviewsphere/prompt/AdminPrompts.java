@@ -26,7 +26,7 @@ public class AdminPrompts {
                 }
             },
             "required": ["valid"],
-                "additionalProperties": false
+            "additionalProperties": false
         }
         """;
 
@@ -68,7 +68,8 @@ public class AdminPrompts {
 					"items": {"type": "string"}
 				}
 			},
-			"required": ["questions"]
+			"required": ["questions"],
+            "additionalProperties": false
 		}
 		""";
 
@@ -93,7 +94,8 @@ public class AdminPrompts {
 					"items": {"type": "string"}
 				}
 			},
-			"required": ["questions"]
+			"required": ["questions"],
+            "additionalProperties": false
 		}
 		""";
 
@@ -121,7 +123,8 @@ public class AdminPrompts {
 					"items": {"type": "string"}
 				}
 			},
-			"required": ["questions"]
+			"required": ["questions"],
+            "additionalProperties": false
 		}
 		""";
 }

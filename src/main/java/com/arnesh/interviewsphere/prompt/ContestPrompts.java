@@ -31,7 +31,8 @@ public class ContestPrompts {
                         "type": "string"
                     }
                 },
-                "required": ["summary"]
+                "required": ["summary"],
+                "additionalProperties": false
             }
             """;
 
@@ -92,7 +93,8 @@ public class ContestPrompts {
                                 "question_id",
                                 "feedback",
                                 "score"
-                            ]
+                            ],
+                            "additionalProperties": false
                         }
                     },
                     "overall_feedback": {"type": "string"}
@@ -100,7 +102,8 @@ public class ContestPrompts {
                 "required": [
                     "results",
                     "overall_feedback"
-                ]
+                ],
+                "additionalProperties": false
             }
             """;
 
@@ -155,7 +158,8 @@ public class ContestPrompts {
                                 "question_id",
                                 "feedback",
                                 "score"
-                            ]
+                            ],
+                            "additionalProperties": false
                         }
                     },
                     "overall_feedback": {"type": "string"}
@@ -163,7 +167,8 @@ public class ContestPrompts {
                 "required": [
                     "results",
                     "overall_feedback"
-                ]
+                ],
+                "additionalProperties": false
             }
             """;
 
@@ -219,7 +224,8 @@ public class ContestPrompts {
                                 "question_id",
                                 "feedback",
                                 "score"
-                            ]
+                            ],
+                            "additionalProperties": false
                         }
                     },
                     "overall_feedback": {"type": "string"}
@@ -227,7 +233,8 @@ public class ContestPrompts {
                 "required": [
                     "results",
                     "overall_feedback"
-                ]
+                ],
+                "additionalProperties": false
             }
             """;
 
@@ -314,7 +321,8 @@ public class ContestPrompts {
                                 "question_id",
                                 "feedback",
                                 "score"
-                            ]
+                            ],
+                            "additionalProperties": false
                         }
                     },
                     "overall_feedback": {"type": "string"}
@@ -322,7 +330,8 @@ public class ContestPrompts {
                 "required": [
                     "results",
                     "overall_feedback"
-                ]
+                ],
+                "additionalProperties": false
             }
             """;
 }

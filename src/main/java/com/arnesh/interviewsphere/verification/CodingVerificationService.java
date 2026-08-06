@@ -70,7 +70,7 @@ public class CodingVerificationService {
             throw new CustomException("Number of questions must be greater than 0.", HttpStatus.BAD_REQUEST);
         }
 
-        int available = codingTrack.getAvailableQues() != null ? codingTrack.getAvailableQues() : 0;
+        int available = Objects.requireNonNullElse(codingTrack.getAvailableQues(), 0);
 
         if (numQuestion > available) {
             throw new CustomException(
@@ -141,7 +141,7 @@ public class CodingVerificationService {
      */
     public void verifySessionTime(QuestionSession sessionDoc, UUID sessionObjId) {
         OffsetDateTime startTime = sessionDoc.getTimestamp().withOffsetSameInstant(ZoneOffset.UTC);
-        int totalTime = sessionDoc.getTime() != null ? sessionDoc.getTime() : 0;
+        int totalTime = Objects.requireNonNullElse(sessionDoc.getTime(), 0);
 
         OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
         double elapsedMinutes = Duration.between(startTime, now).toSeconds() / 60.0;

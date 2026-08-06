@@ -38,6 +38,10 @@ public class PracticeGithubTrack {
     @JsonProperty("selected_repo")
     private String selectedRepo;
 
+    @Column(name = "github_number", nullable = false)
+    @JsonProperty("github_number")
+    private Integer githubNumber;
+
     @Column(name = "repo_summary", columnDefinition = "TEXT")
     @JsonProperty("repo_summary")
     private String repoSummary;

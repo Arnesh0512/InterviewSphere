@@ -1,5 +1,16 @@
 package com.arnesh.interviewsphere.service;
 
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.arnesh.interviewsphere.ai.ConceptAiService;
 import com.arnesh.interviewsphere.constant.Topic;
 import com.arnesh.interviewsphere.dto.request.SaveAnswerRequest;
@@ -19,13 +30,8 @@ import com.arnesh.interviewsphere.util.ConceptUtil;
 import com.arnesh.interviewsphere.util.TimeUtil;
 import com.arnesh.interviewsphere.verification.CandidateVerificationService;
 import com.arnesh.interviewsphere.verification.ConceptVerificationService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
-import java.util.*;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -49,21 +55,24 @@ public class ConceptService {
         var candidateResult = candidateVerificationService.verifyCandidateById(principal.getId().toString(), "Y");
         Candidate candidate = candidateResult.getCandidate();
 
-        int nextConceptNum = (candidate.getTotalConcepts() != null ? candidate.getTotalConcepts() : 0) + 1;
+        int nextConceptNum = Objects.requireNonNullElse(candidate.getTotalConcepts(), 0) + 1;
+
+        List<String> topicStrings = topics.stream().map(t -> t.getValue()).toList();
 
         PracticeConceptTrack track = PracticeConceptTrack.builder()
                 .candidateId(candidate.getId())
                 .conceptNumber(nextConceptNum)
-                .topics(topics)
+                .topics(topicStrings)
                 .totalSessions(0)
                 .build();
 
-        practiceConceptTrackRepository.save(track);
+        PracticeConceptTrack savedTrack = practiceConceptTrackRepository.save(track);
 
         candidate.setTotalConcepts(nextConceptNum);
         candidateRepository.save(candidate);
 
-        return Map.of("success", true);
+        return Map.of("success", true,
+        "concept_id", savedTrack.getId().toString());
     }
 
     // 2. Get All Concept Tracks
@@ -106,7 +115,7 @@ public class ConceptService {
         var verifiedConcept = conceptVerificationService.verifyConcept(conceptIdStr, principal.getId());
         PracticeConceptTrack track = verifiedConcept.getConceptTrack();
 
-        int sessionNumber = (track.getTotalSessions() != null ? track.getTotalSessions() : 0) + 1;
+        int sessionNumber = Objects.requireNonNullElse(track.getTotalSessions(), 0) + 1;
 
         Map<String, Map<String, String>> previousSessions = new HashMap<>();
         if (sessionNumber != 1) {
@@ -114,7 +123,7 @@ public class ConceptService {
             previousSessions = prevResponse.getSessionDict();
         }
 
-        List<String> topicStrings = track.getTopics().stream().map(t -> t.name()).toList();
+        List<String> topicStrings = track.getTopics();
         ConceptAiResponses.QuestionListResponse aiQuestions = conceptAiService.generateConceptTopicQuestions(
                 topicStrings, numQuestions, previousSessions);
 
@@ -146,12 +155,23 @@ public class ConceptService {
         track.setTotalSessions(sessionNumber);
         practiceConceptTrackRepository.save(track);
 
+        List<Map<String, Object>> formattedQuestionBank = questionBank.stream().map(q -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("questionId", q.getQuestionId());
+            map.put("question", q.getQuestion());
+            map.put("answer", q.getAnswer());
+            map.put("feedback", q.getFeedback());
+            map.put("score", q.getScore());
+            return map;
+        }).toList();
+
         return QuestionSessionResponse.builder()
                 .sessionId(session.getId().toString())
                 .sessionNumber(sessionNumber)
                 .status("active")
                 .time(durationMinutes)
                 .timestamp(now)
+                .questionBank(formattedQuestionBank)
                 .build();
     }
 
@@ -222,7 +242,7 @@ public class ConceptService {
         conceptVerificationService.verifySessionStatus(session);
 
         OffsetDateTime timestamp = session.getTimestamp() != null ? session.getTimestamp() : TimeUtil.generateTimestamp();
-        int minutes = session.getTime() != null ? session.getTime() : 0;
+        int minutes = Objects.requireNonNullElse(session.getTime() , 0);
         OffsetDateTime autoSubmitTime = timestamp.plusMinutes(minutes + 1);
 
         session.setStatus("passive");
@@ -241,7 +261,7 @@ public class ConceptService {
 
         conceptVerificationService.verifySessionStatus2(session);
 
-        List<String> topicStrings = verifiedConcept.getConceptTrack().getTopics().stream().map(t -> t.name()).toList();
+        List<String> topicStrings = verifiedConcept.getConceptTrack().getTopics();
         
         // Pass session.getQuestionBank() directly without raw (List) casting
         ConceptAiResponses.ConceptEvaluationResponse evaluation = conceptAiService.evaluateConceptTopicAnswers(
@@ -355,7 +375,7 @@ public class ConceptService {
         PracticeConceptTrack track = verifiedConcept.getConceptTrack();
 
         PreviousConceptSessionResponse sessionData = conceptUtil.previousConceptSessionQuestions(track.getId(), x, null);
-        List<String> topicStrings = track.getTopics().stream().map(t -> t.name()).toList();
+        List<String> topicStrings = track.getTopics();
 
         ConceptAiResponses.CombinedFeedbackDetails combinedDetails = conceptAiService.generateConceptCombinedDiffSessionFeedback(
                 topicStrings, (Map) sessionData.getSessionDict());
@@ -389,7 +409,7 @@ public class ConceptService {
 
         PreviousConceptSessionResponse sessionData = conceptUtil.previousConceptSessionQuestions(
                 track.getId(), x, verifiedSession.getSessionDoc().getSessionNumber());
-        List<String> topicStrings = track.getTopics().stream().map(t -> t.name()).toList();
+        List<String> topicStrings = track.getTopics();
 
         ConceptAiResponses.CombinedFeedbackDetails combinedDetails = conceptAiService.generateConceptCombinedSameSessionFeedback(
                 topicStrings, (Map) sessionData.getSessionDict());

@@ -1,6 +1,20 @@
 package com.arnesh.interviewsphere.service;
 
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.arnesh.interviewsphere.ai.CodingAiService;
+import com.arnesh.interviewsphere.constant.Difficulty;
+import com.arnesh.interviewsphere.constant.Company;
+import com.arnesh.interviewsphere.constant.Tag;
 import com.arnesh.interviewsphere.dto.request.SaveAnswerRequest;
 import com.arnesh.interviewsphere.dto.request.SubmitSessionRequest;
 import com.arnesh.interviewsphere.dto.response.CodingAiResponses;
@@ -20,12 +34,6 @@ import com.arnesh.interviewsphere.util.TimeUtil;
 import com.arnesh.interviewsphere.verification.CandidateVerificationService;
 import com.arnesh.interviewsphere.verification.CodingVerificationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.OffsetDateTime;
-import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -42,13 +50,17 @@ public class CodingService {
 
     // 1. Start Coding Track
     @Transactional
-    public Map<String, Object> startCoding(UserPrincipal principal, List<String> company, List<String> tag, List<String> difficulty) {
+    public Map<String, Object> startCoding(UserPrincipal principal, List<Company> company, List<Tag> tag, List<Difficulty> difficulty) {
         var candidateResult = candidateVerificationService.verifyCandidateById(principal.getId().toString(), "Y");
         Candidate candidate = candidateResult.getCandidate();
 
-        String[] compArray = company != null ? company.toArray(new String[0]) : new String[0];
-        String[] tagArray = tag != null ? tag.toArray(new String[0]) : new String[0];
-        String[] diffArray = difficulty != null ? difficulty.toArray(new String[0]) : new String[0];
+        List<String> companyList = company != null ? company.stream().map(c -> c.getValue()).toList() : List.of();
+        List<String> tagList = tag != null ? tag.stream().map(t -> t.getValue()).toList() : List.of();
+        List<String> difficultyList = difficulty != null ? difficulty.stream().map(d -> d.getValue()).toList() : List.of();
+
+        String[] compArray = companyList != null ? companyList.toArray(String[]::new) : new String[0];
+        String[] tagArray = tagList != null ? tagList.toArray(String[]::new) : new String[0];
+        String[] diffArray = difficultyList != null ? difficultyList.toArray(String[]::new) : new String[0];
 
         long availableQues = leetCodeQuestionRepository.countFilteredQuestions(
                 compArray.length > 0, compArray,
@@ -63,24 +75,27 @@ public class CodingService {
             );
         }
 
-        int nextCodingNum = (candidate.getTotalCodings() != null ? candidate.getTotalCodings() : 0) + 1;
+        int nextCodingNum = Objects.requireNonNullElse(candidate.getTotalCodings(), 0) + 1;
+        
 
         PracticeCodingTrack track = PracticeCodingTrack.builder()
                 .candidateId(candidate.getId())
                 .codingNumber(nextCodingNum)
-                .company(company != null ? company : List.of())
-                .tag(tag != null ? tag : List.of())
-                .difficulty(difficulty != null ? difficulty : List.of())
+                .company(company != null ? companyList : List.of())
+                .tag(tag != null ? tagList : List.of())
+                .difficulty(difficulty != null ? difficultyList : List.of())
                 .availableQues((int) availableQues)
                 .totalSessions(0)
                 .build();
 
-        practiceCodingTrackRepository.save(track);
+
+        PracticeCodingTrack savedTrack = practiceCodingTrackRepository.save(track);
 
         candidate.setTotalCodings(nextCodingNum);
         candidateRepository.save(candidate);
 
-        return Map.of("success", true);
+        return Map.of("success", true,
+        "coding_id", savedTrack.getId().toString());
     }
 
     // 2. Get All Coding Tracks
@@ -128,16 +143,18 @@ public class CodingService {
 
         codingVerificationService.verifyQuantity(numQuestions, track);
 
-        int sessionNumber = (track.getTotalSessions() != null ? track.getTotalSessions() : 0) + 1;
+        int sessionNumber = Objects.requireNonNullElse(track.getTotalSessions(), 0) + 1;
 
-        List<Integer> excludeIds = sessionNumber > 1
+        List<Integer> excludeIdsInt = sessionNumber > 1
                 ? codingUtil.getUsedCodingQuestionIds(track.getId())
                 : List.of();
 
-        String[] compArray = track.getCompany() != null ? track.getCompany().toArray(new String[0]) : new String[0];
-        String[] tagArray = track.getTag() != null ? track.getTag().toArray(new String[0]) : new String[0];
-        String[] diffArray = track.getDifficulty() != null ? track.getDifficulty().toArray(new String[0]) : new String[0];
-        String[] excludeArray = excludeIds.toArray(new String[0]);
+        String[] compArray = track.getCompany() != null ? track.getCompany().toArray(String[]::new) : new String[0];
+        String[] tagArray = track.getTag() != null ? track.getTag().toArray(String[]::new) : new String[0];
+        String[] diffArray = track.getDifficulty() != null ? track.getDifficulty().toArray(String[]::new) : new String[0];
+        String[] excludeArray = excludeIdsInt.stream()
+        .map(String::valueOf)
+        .toArray(String[]::new);
 
         List<LeetCodeQuestion> questionsList = leetCodeQuestionRepository.findRandomFilteredQuestions(
                 compArray.length > 0, compArray,
@@ -265,7 +282,7 @@ public class CodingService {
         codingVerificationService.verifySessionStatus(session);
 
         OffsetDateTime timestamp = session.getTimestamp() != null ? session.getTimestamp() : TimeUtil.generateTimestamp();
-        int minutes = session.getTime() != null ? session.getTime() : 0;
+        int minutes = Objects.requireNonNullElse(session.getTime(), 0);
         OffsetDateTime autoSubmitTime = timestamp.plusMinutes(minutes + 1);
 
         session.setStatus("passive");
@@ -294,6 +311,7 @@ public class CodingService {
         }
 
         List<LeetCodeQuestion> questionDocs = leetCodeQuestionRepository.findByQuestionIdIn(questionIds);
+
         Map<Integer, String> questionMap = new HashMap<>();
         for (LeetCodeQuestion doc : questionDocs) {
             questionMap.put(doc.getQuestionId(), doc.getProblemDescription());
@@ -302,7 +320,7 @@ public class CodingService {
         List<Map<String, Object>> enrichedQuestions = new ArrayList<>();
         if (session.getQuestionBank() != null) {
             for (QuestionSession.Question q : session.getQuestionBank()) {
-                String qid = q.getQuestionId() != null ? q.getQuestionId().toString() : "";
+                Integer qid = Objects.requireNonNullElse(q.getQuestionId(),0);
                 enrichedQuestions.add(Map.of(
                         "question_id", qid,
                         "problem_description", questionMap.getOrDefault(qid, ""),
@@ -311,6 +329,7 @@ public class CodingService {
                 ));
             }
         }
+
 
         // Pass enrichedQuestions directly without the (List) cast
         CodingAiResponses.CodingEvaluationResponse evaluation = codingAiService.evaluateCodingAnswers(enrichedQuestions);
@@ -324,7 +343,7 @@ public class CodingService {
             }
 
             for (QuestionSession.Question q : session.getQuestionBank()) {
-                Integer qid = q.getQuestionId() != null ? q.getQuestionId() : 0;
+                Integer qid = Objects.requireNonNullElse(q.getQuestionId(), 0);
                 if (feedbackMap.containsKey(qid)) {
                     q.setFeedback(feedbackMap.get(qid).getFeedback());
                     q.setScore(feedbackMap.get(qid).getScore());

@@ -1,6 +1,10 @@
 package com.arnesh.interviewsphere.controller;
 
+import com.arnesh.interviewsphere.constant.Difficulty;
+import com.arnesh.interviewsphere.constant.Company;
+import com.arnesh.interviewsphere.constant.Tag;
 import com.arnesh.interviewsphere.dto.request.SaveAnswerRequest;
+import com.arnesh.interviewsphere.dto.request.StartCodingRequest;
 import com.arnesh.interviewsphere.dto.request.SubmitSessionRequest;
 import com.arnesh.interviewsphere.dto.response.ApiResponse;
 import com.arnesh.interviewsphere.dto.response.CodingAiResponses;
@@ -26,10 +30,12 @@ public class CodingController {
     @PostMapping("/start-coding")
     public ResponseEntity<ApiResponse<Map<String, Object>>> startCoding(
             @AuthenticationPrincipal UserPrincipal principal,
-            @RequestParam(value = "company", required = false) List<String> company,
-            @RequestParam(value = "tag", required = false) List<String> tag,
-            @RequestParam(value = "difficulty", required = false) List<String> difficulty
+            @RequestBody(required = false) StartCodingRequest request
     ) {
+        List<Company> company = request != null ? request.getCompany() : null;
+        List<Tag> tag = request != null ? request.getTag() : null;
+        List<Difficulty> difficulty = request != null ? request.getDifficulty() : null;
+
         Map<String, Object> response = codingService.startCoding(principal, company, tag, difficulty);
         return ResponseEntity.ok(ApiResponse.success(response));
     }

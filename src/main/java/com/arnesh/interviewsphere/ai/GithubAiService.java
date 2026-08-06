@@ -54,14 +54,22 @@ public class GithubAiService {
                 throw new CustomException("Empty summary returned by AI", HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
+            com.fasterxml.jackson.databind.JsonNode rootNode = objectMapper.readTree(summaryText);
+            if (rootNode.has("summary")) {
+                String sum = rootNode.get("summary").asText().trim();
+                return ProcessRepoResponse.builder()
+                        .repoName(details.getRepoName())
+                        .summary(sum)
+                        .build();
+            }            
+
             return ProcessRepoResponse.builder()
                     .repoName(details.getRepoName())
                     .summary(summaryText.trim())
                     .build();
 
-        } catch (CustomException ce) {
-            throw ce;
-        } catch (Exception e) {
+
+        } catch (JsonProcessingException | CustomException e) {
             throw new CustomException("Failed to process repo summary: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

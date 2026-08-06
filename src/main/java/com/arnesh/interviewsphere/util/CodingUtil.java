@@ -81,9 +81,7 @@ public class CodingUtil {
         for (QuestionSession s : sessionsDiff) {
             if (s.getQuestionBank() != null) {
                 for (QuestionSession.Question q : s.getQuestionBank()) {
-                    if (q.getAnswer() != null && !q.getAnswer().isBlank() && q.getQuestionId() != null) {
                         questionIds.add(q.getQuestionId());
-                    }
                 }
             }
         }
@@ -107,12 +105,8 @@ public class CodingUtil {
                     String answer = q.getAnswer();
                     String language = q.getLanguage();
 
-                    if (answer == null || answer.isBlank() || !problemMap.containsKey(qid)) {
-                        continue;
-                    }
-
                     String problemDescription = problemMap.get(qid);
-                    formattedQuestions.put(problemDescription, "Language: " + language + "\n Answer:\n" + answer);
+                    formattedQuestions.put("Problem:\n"+problemDescription, "Language: " + language + "\n Answer:\n" + answer);
                 }
             }
 

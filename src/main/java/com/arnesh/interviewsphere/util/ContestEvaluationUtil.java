@@ -66,8 +66,7 @@ public class ContestEvaluationUtil {
 
         List<Integer> questionIds = questionBank.stream()
                 .map(q -> {
-                    Object id = q.get("questionId");
-                    return id != null ? Integer.parseInt(id.toString()) : null;
+                    return (Integer) q.get("questionId");
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -76,8 +75,8 @@ public class ContestEvaluationUtil {
                 .collect(Collectors.toMap(q -> q.getQuestionId(), q -> q.getProblemDescription()));
 
         List<CodingEvaluationInput> evaluationInput = questionBank.stream().map(q -> {
-            Object id = q.get("questionId");
-            Integer qid = id != null ? Integer.parseInt(id.toString()) : 0;
+            Integer qid = Objects.requireNonNullElse((Integer) q.get("questionId"), 0);
+
             return CodingEvaluationInput.builder()
                     .questionId(qid)
                     .problemDescription(questionMap.getOrDefault(qid, ""))
@@ -127,8 +126,8 @@ public class ContestEvaluationUtil {
 
         List<ConceptEvaluationInput> evaluationInput = new ArrayList<>();
         for (var q : questionBank) {
-            Object qidObj = q.get("questionId");
-            Integer qid = qidObj != null ? Integer.parseInt(qidObj.toString()) : 0;
+            Integer qid = Objects.requireNonNullElse((Integer) q.get("questionId"), 0);
+
             String questionText = (String) q.getOrDefault("question", "");
 
             evaluationInput.add(ConceptEvaluationInput.builder()
@@ -178,8 +177,8 @@ public class ContestEvaluationUtil {
         
         List<HrEvaluationInput> evaluationInput = new ArrayList<>();
         for (var q : questionBank) {
-            Object qidObj = q.get("questionId");
-            Integer qid = qidObj != null ? Integer.parseInt(qidObj.toString()) : 0;
+            Integer qid = Objects.requireNonNullElse((Integer) q.get("questionId"), 0);
+            
             String questionText = (String) q.getOrDefault("question", "");
             String transcript = (String) q.getOrDefault("transcript", "");
 

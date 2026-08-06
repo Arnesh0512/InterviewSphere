@@ -125,6 +125,11 @@ public enum Skill {
         this.value = value;
     }
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
     public static Skill fromValue(String value) {
         if (value == null) {
             throw new IllegalArgumentException("Skill value cannot be null");

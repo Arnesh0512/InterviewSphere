@@ -35,7 +35,8 @@ public class GithubPrompts {
                         "type": "string"
                     }
                 },
-                "required": ["summary"]
+                "required": ["summary"],
+                "additionalProperties": false
             }
             """;
 
@@ -116,10 +117,19 @@ public class GithubPrompts {
                         }
                     }
                 },
-                "required": ["questions"]
+                "required": ["questions"],
+                "additionalProperties": false
             }
             """;
 
+
+
+
+
+
+
+
+            
     public static final String EVALUATE_GITHUB_ANSWERS_PROMPT = """
             You are a senior software architect and technical interviewer.
 
@@ -176,7 +186,8 @@ public class GithubPrompts {
                                 "question_id",
                                 "feedback",
                                 "score"
-                            ]
+                            ],
+                        "additionalProperties": false
                         }
                     },
                     "overall_feedback": {"type": "string"},
@@ -186,9 +197,17 @@ public class GithubPrompts {
                     "feedback_per_question",
                     "overall_feedback",
                     "overall_score"
-                ]
+                ],
+                "additionalProperties": false
             }
             """;
+
+
+
+
+
+
+
 
     public static final String COMBINED_DIFF_SESSION_FEEDBACK_PROMPT = """
             You are a senior technical interview evaluator.
@@ -215,11 +234,19 @@ public class GithubPrompts {
             - Higher session numbers represent older sessions.
             - Each key inside a session is a question and its value is the candidate's answer.
 
+            CRITICAL EVALUATION MANDATE:
+            - PRIMARY SOURCE OF TRUTH: All feedback fields (improvement, weaknesses, strengths, recommendations) must be derived EXCLUSIVELY from the candidate's actual answers to the questions across the sessions.
+            - THE Repository SUMMARY ROLE: The repository summary is provided ONLY to cross-check whether the candidate's technical claims match their actual performance or if they are giving fake/contradictory responses. 
+            - Do NOT write positive feedback based on things listed in the repository if they were not actually demonstrated or answered correctly in the code/responses.
+            - PENALTY FOR BAD ANSWERS: If a user's answer is incorrect, empty, unattempted, or contradicts their repository summary, you must reflect this as a weakness and give a strict, poor evaluation for that section.
+            - ABSOLUTE PROHIBITION: Do NOT praise or evaluate the candidate based on the repository summary. If it's not in the answers, it does not exist for this evaluation.
+
+
             Instructions:
-            - Evaluate overall technical progression.
-            - Identify architectural understanding growth.
-            - Identify improvement patterns.
-            - Identify repeated weaknesses.
+            - Evaluate overall technical progression across sessions strictly based on answers.
+            - Identify architectural understanding growth from actual code/answers.
+            - Identify improvement patterns from actual code/answers.
+            - Identify repeated weaknesses or contradictions against their profile.
             - Identify consistent strengths.
             - Evaluate depth growth across sessions.
             - Evaluate system design maturity progression.
@@ -227,6 +254,7 @@ public class GithubPrompts {
             - Be strict, analytical, and professional.
             - Provide structured feedback (strengths, weaknesses, progression, recommendations).
             - Do NOT mention JSON or formatting.
+            - Do not provide very large or very small feedback.
 
             Return strictly valid JSON:
             {
@@ -251,13 +279,19 @@ public class GithubPrompts {
                             "recommendations": {"type": "string"}
                         },
                         "required": ["improvement", "weaknesses", "strengths", "recommendations"],
-                        "additionalProperties": False
+                        "additionalProperties": false
                     }
                 },
                 "required": ["feedback"],
-                "additionalProperties": False
+                "additionalProperties": false
             }
             """;
+
+
+
+
+
+
 
     public static final String COMBINED_SAME_SESSION_FEEDBACK_PROMPT = """
             You are a senior technical interview evaluator.
@@ -285,17 +319,26 @@ public class GithubPrompts {
             - Each key inside a session is a question and its value is the candidate's answer.
             - All sessions correspond to the same interview round repeated over time.
 
+            CRITICAL EVALUATION MANDATE:
+            - PRIMARY SOURCE OF TRUTH: All feedback fields (improvement, weaknesses, strengths, recommendations) must be derived EXCLUSIVELY from the candidate's actual answers to the questions across the sessions.
+            - THE Repository SUMMARY ROLE: The repository summary is provided ONLY to cross-check whether the candidate's technical claims match their actual performance or if they are giving fake/contradictory responses. 
+            - Do NOT write positive feedback based on things listed in the repository if they were not actually demonstrated or answered correctly in the code/responses.
+            - PENALTY FOR BAD ANSWERS: If a user's answer is incorrect, empty, unattempted, or contradicts their repository summary, you must reflect this as a weakness and give a strict, poor evaluation for that section.
+            - ABSOLUTE PROHIBITION: Do NOT praise or evaluate the candidate based on the repository summary. If it's not in the answers, it does not exist for this evaluation.
+
             Instructions:
-            - Evaluate progression across attempts.
-            - Identify architectural depth improvement.
-            - Identify areas of improvement.
-            - Identify areas where mistakes persist.
+            - Evaluate overall technical progression across reattempts strictly based on answers.
+            - Identify architectural understanding growth from actual code/answers.
+            - Identify improvement patterns from actual code/answers.
+            - Identify repeated weaknesses or contradictions against their profile.
+            - Identify consistent strengths.
             - Evaluate correction of past weaknesses.
             - Evaluate depth growth and system design maturity progression.
-            - Compare latest attempt with older attempts.
+            - Compare recent attempt with older attempts.
             - Be strict, analytical, and professional.
-            - Provide structured feedback (improvement, weaknesses, strengths, recommendations).
+            - Provide structured feedback (strengths, weaknesses, progression, recommendations).
             - Do NOT mention JSON or formatting.
+            - Do not provide very large or very small feedback.
 
             Return strictly valid JSON:
             {
@@ -320,11 +363,11 @@ public class GithubPrompts {
                             "recommendations": {"type": "string"}
                         },
                         "required": ["improvement", "weaknesses", "strengths", "recommendations"],
-                        "additionalProperties": False
+                        "additionalProperties": false
                     }
                 },
                 "required": ["feedback"],
-                "additionalProperties": False
+                "additionalProperties": false
             }
             """;
 }

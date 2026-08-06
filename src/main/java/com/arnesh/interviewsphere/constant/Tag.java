@@ -77,6 +77,11 @@ public enum Tag {
         this.value = value;
     }
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
     public static Tag fromValue(String value) {
         if (value == null) {
             throw new IllegalArgumentException("Tag value cannot be null");

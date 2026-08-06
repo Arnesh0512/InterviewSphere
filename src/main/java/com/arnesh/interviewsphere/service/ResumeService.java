@@ -1,5 +1,19 @@
 package com.arnesh.interviewsphere.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.arnesh.interviewsphere.ai.ResumeAiService;
 import com.arnesh.interviewsphere.dto.request.SaveAnswerRequest;
 import com.arnesh.interviewsphere.dto.request.SubmitSessionRequest;
@@ -18,16 +32,8 @@ import com.arnesh.interviewsphere.util.ResumeUtil;
 import com.arnesh.interviewsphere.util.TimeUtil;
 import com.arnesh.interviewsphere.verification.CandidateVerificationService;
 import com.arnesh.interviewsphere.verification.ResumeVerificationService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.OffsetDateTime;
-import java.util.*;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -81,7 +87,7 @@ public class ResumeService {
             }
         }
 
-        int nextResumeNum = (candidate.getTotalResumes() != null ? candidate.getTotalResumes() : 0) + 1;
+        int nextResumeNum = Objects.requireNonNullElse(candidate.getTotalResumes(), 0) + 1;
 
         PracticeResumeTrack track = PracticeResumeTrack.builder()
                 .candidateId(candidate.getId())
@@ -284,7 +290,7 @@ public class ResumeService {
 
         OffsetDateTime timestamp = session.getTimestamp() != null ? session.getTimestamp()
                 : TimeUtil.generateTimestamp();
-        int minutes = session.getTime() != null ? session.getTime() : 0;
+        int minutes = Objects.requireNonNullElse(session.getTime(), 0);
         OffsetDateTime autoSubmitTime = timestamp.plusMinutes(minutes + 1);
 
         session.setStatus("passive");

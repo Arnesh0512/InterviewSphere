@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -200,7 +201,8 @@ public class GithubVerificationService {
      */
     public void verifySessionTime(QuestionSession sessionDoc, UUID sessionObjId) {
         OffsetDateTime startTime = sessionDoc.getTimestamp().withOffsetSameInstant(ZoneOffset.UTC);
-        int totalTime = sessionDoc.getTime() != null ? sessionDoc.getTime() : 0;
+        int totalTime = Objects.requireNonNullElse(sessionDoc.getTime(), 0);
+
 
         OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
         double elapsedMinutes = Duration.between(startTime, now).toSeconds() / 60.0;

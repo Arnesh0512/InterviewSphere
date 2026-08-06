@@ -1,5 +1,16 @@
 package com.arnesh.interviewsphere.service;
 
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.arnesh.interviewsphere.ai.GithubAiService;
 import com.arnesh.interviewsphere.dto.request.SaveAnswerRequest;
 import com.arnesh.interviewsphere.dto.request.SubmitSessionRequest;
@@ -19,13 +30,8 @@ import com.arnesh.interviewsphere.util.GithubUtil;
 import com.arnesh.interviewsphere.util.TimeUtil;
 import com.arnesh.interviewsphere.verification.CandidateVerificationService;
 import com.arnesh.interviewsphere.verification.GithubVerificationService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
-import java.util.*;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -54,22 +60,25 @@ public class GithubService {
         githubVerificationService.verifyGithubLinkRepo(githubLink, repoLink);
         GithubAiResponses.ProcessRepoResponse repoDetails = githubAiService.processRepo(repoLink);
 
-        int nextGithubNum = (candidate.getTotalGithubs() != null ? candidate.getTotalGithubs() : 0) + 1;
+        int nextGithubNum = Objects.requireNonNullElse(candidate.getTotalGithubs(), 0) + 1;
 
         PracticeGithubTrack track = PracticeGithubTrack.builder()
                 .candidateId(candidate.getId())
+                .githubNumber(nextGithubNum)
                 .githubLink(githubLink)
                 .selectedRepo(repoDetails.getRepoName())
                 .repoSummary(repoDetails.getSummary())
                 .totalSessions(0)
                 .build();
 
-        practiceGithubTrackRepository.save(track);
+        PracticeGithubTrack savedTrack = practiceGithubTrackRepository.save(track);
 
         candidate.setTotalGithubs(nextGithubNum);
         candidateRepository.save(candidate);
 
-        return Map.of("success", true);
+        return Map.of("success", true,
+        "github_id", savedTrack.getId().toString()
+        );
     }
 
     // 3. Get All GitHub Tracks
@@ -80,6 +89,7 @@ public class GithubService {
         return tracks.stream().map(track -> {
             Map<String, Object> map = new HashMap<>();
             map.put("github_id", track.getId().toString());
+            map.put("gihub_number", track.getGithubNumber());
             map.put("github_link", track.getGithubLink());
             map.put("repo_name", track.getSelectedRepo());
             map.put("created_on", track.getCreatedOn());
@@ -114,7 +124,7 @@ public class GithubService {
         var verifiedGithub = githubVerificationService.verifyGithub(githubIdStr, principal.getId());
         PracticeGithubTrack track = verifiedGithub.getGithubTrack();
 
-        int sessionNumber = (track.getTotalSessions() != null ? track.getTotalSessions() : 0) + 1;
+        int sessionNumber = Objects.requireNonNullElse(track.getTotalSessions(), 0) + 1;
 
         Map<String, Map<String, String>> previousSessions = new HashMap<>();
         if (sessionNumber != 1) {
@@ -154,12 +164,23 @@ public class GithubService {
         track.setTotalSessions(sessionNumber);
         practiceGithubTrackRepository.save(track);
 
+        List<Map<String, Object>> formattedQuestionBank = questionBank.stream().map(q -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("questionId", q.getQuestionId());
+            map.put("question", q.getQuestion());
+            map.put("answer", q.getAnswer());
+            map.put("feedback", q.getFeedback());
+            map.put("score", q.getScore());
+            return map;
+        }).toList();
+
         return QuestionSessionResponse.builder()
                 .sessionId(session.getId().toString())
                 .sessionNumber(sessionNumber)
                 .status("active")
                 .time(durationMinutes)
                 .timestamp(now)
+                .questionBank(formattedQuestionBank)
                 .build();
     }
 
@@ -235,7 +256,7 @@ public class GithubService {
 
         OffsetDateTime timestamp = session.getTimestamp() != null ? session.getTimestamp()
                 : TimeUtil.generateTimestamp();
-        int minutes = session.getTime() != null ? session.getTime() : 0;
+        int minutes = Objects.requireNonNullElse(session.getTime(), 0);
         OffsetDateTime autoSubmitTime = timestamp.plusMinutes(minutes + 1);
 
         session.setStatus("passive");

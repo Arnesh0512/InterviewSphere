@@ -47,7 +47,7 @@ public interface LeetCodeQuestionRepository extends JpaRepository<LeetCodeQuesti
         WHERE (:hasCompanies = false OR q.companies && CAST(:companies AS text[]))
           AND (:hasTags = false OR q.tags && CAST(:tags AS text[]))
           AND (:hasDifficulties = false OR q.difficulty = ANY(CAST(:difficulties AS text[])))
-          AND (:hasExclude = false OR NOT (q.question_id = ANY(CAST(:excludeIds AS text[]))))
+          AND (:hasExclude = false OR NOT (q.question_id::text = ANY(CAST(:excludeIds AS text[]))))
         ORDER BY RANDOM()
         LIMIT :limit
         """, nativeQuery = true)

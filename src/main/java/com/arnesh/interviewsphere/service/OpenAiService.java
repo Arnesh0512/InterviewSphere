@@ -1,9 +1,13 @@
 package com.arnesh.interviewsphere.service;
 
-import com.arnesh.interviewsphere.config.AppProperties;
-import com.arnesh.interviewsphere.dto.response.AudioTranscriptionResponse;
-import com.arnesh.interviewsphere.exception.CustomException;
-import lombok.RequiredArgsConstructor;
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -19,12 +23,11 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import java.io.File;
-import java.util.List;
-import java.util.Map;
+import com.arnesh.interviewsphere.config.AppProperties;
+import com.arnesh.interviewsphere.dto.response.AudioTranscriptionResponse;
+import com.arnesh.interviewsphere.exception.CustomException;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -39,15 +42,22 @@ public class OpenAiService {
      */
     public String callChatGpt(String systemPrompt, String userContent, double temperature, String jsonSchema) {
         try {
+            System.out.println(userContent);
             // Use Spring AI 2.0's built-in OpenAiChatModel.ResponseFormat definition
             OpenAiChatModel.ResponseFormat responseFormat = OpenAiChatModel.ResponseFormat.builder()
                     .type(OpenAiChatModel.ResponseFormat.Type.JSON_SCHEMA)
                     .jsonSchema(jsonSchema)
                     .build();
 
-            OpenAiChatOptions options = OpenAiChatOptions.builder()
+            /*OpenAiChatOptions options = OpenAiChatOptions.builder()
                     .model("gpt-4o-mini")
                     .temperature(temperature)
+                    .responseFormat(responseFormat)
+                    .build();*/
+
+            OpenAiChatOptions options = OpenAiChatOptions.builder()
+                    .model("gpt-5-nano")
+                    .temperature(1.0)
                     .responseFormat(responseFormat)
                     .build();
 

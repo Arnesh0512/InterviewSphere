@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.Map;
 
@@ -46,9 +48,7 @@ public class GoogleAuthService {
 
             return idToken.getPayload();
 
-        } catch (CustomException ce) {
-            throw ce;
-        } catch (Exception e) {
+        } catch (GeneralSecurityException | IOException | CustomException e) {
             throw new CustomException("Invalid Google token", HttpStatus.UNAUTHORIZED);
         }
     }

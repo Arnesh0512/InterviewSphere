@@ -78,10 +78,19 @@ public class ConceptPrompts {
                         "items": {"type": "string"}
                     }
                 },
-                "required": ["questions"]
+                "required": ["questions"],
+                "additionalProperties": false
             }
             """;
 
+
+
+
+
+
+
+
+            
     public static final String EVALUATE_CONCEPT_TOPIC_ANSWERS_PROMPT = """
             You are a senior computer science technical interviewer.
 
@@ -143,7 +152,8 @@ public class ConceptPrompts {
                                 "question_id",
                                 "feedback",
                                 "score"
-                            ]
+                            ],
+                            "additionalProperties": false
                         }
                     },
                     "overall_feedback": {"type": "string"},
@@ -153,9 +163,19 @@ public class ConceptPrompts {
                     "feedback_per_question",
                     "overall_feedback",
                     "overall_score"
-                ]
+                ],
+                "additionalProperties": false
             }
             """;
+
+
+
+
+
+
+
+
+
 
     public static final String COMBINED_DIFF_SESSION_FEEDBACK_PROMPT = """
             You are a senior technical interview evaluator.
@@ -194,6 +214,7 @@ public class ConceptPrompts {
             - Be strict, analytical, and professional.
             - Provide structured feedback (improvement, weaknesses, strengths, recommendations).
             - Do NOT mention JSON or formatting.
+            - Do not provide very large or very small feedback.
 
             Return strictly valid JSON:
             {
@@ -218,13 +239,20 @@ public class ConceptPrompts {
                             "recommendations": {"type": "string"}
                         },
                         "required": ["improvement", "weaknesses", "strengths", "recommendations"],
-                        "additionalProperties": False
+                        "additionalProperties": false
                     }
                 },
                 "required": ["feedback"],
-                "additionalProperties": False
+                "additionalProperties": false
             }
             """;
+
+
+
+
+
+
+
 
     public static final String COMBINED_SAME_SESSION_FEEDBACK_PROMPT = """
             You are a senior technical interview evaluator.
@@ -262,6 +290,7 @@ public class ConceptPrompts {
             - Be strict, analytical, and professional.
             - Provide structured feedback (improvement, weaknesses, strengths, recommendations).
             - Do NOT mention JSON or formatting.
+            - Do not provide very large or very small feedback.
 
             Return strictly valid JSON:
             {
@@ -286,11 +315,11 @@ public class ConceptPrompts {
                             "recommendations": {"type": "string"}
                         },
                         "required": ["improvement", "weaknesses", "strengths", "recommendations"],
-                        "additionalProperties": False
+                        "additionalProperties": false
                     }
                 },
                 "required": ["feedback"],
-                "additionalProperties": False
+                "additionalProperties": false
             }
             """;
 }

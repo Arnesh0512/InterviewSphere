@@ -16,6 +16,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -117,7 +118,8 @@ public class ConceptVerificationService {
      */
     public void verifySessionTime(QuestionSession sessionDoc, UUID sessionObjId) {
         OffsetDateTime startTime = sessionDoc.getTimestamp().withOffsetSameInstant(ZoneOffset.UTC);
-        int totalTime = sessionDoc.getTime() != null ? sessionDoc.getTime() : 0;
+        int totalTime = Objects.requireNonNullElse(sessionDoc.getTime(), 0);
+
 
         OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
         double elapsedMinutes = Duration.between(startTime, now).toSeconds() / 60.0;

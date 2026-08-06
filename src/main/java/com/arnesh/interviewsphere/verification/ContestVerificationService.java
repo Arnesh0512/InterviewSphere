@@ -19,6 +19,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -57,8 +58,8 @@ public class ContestVerificationService {
             throw new CustomException("Registration closed", HttpStatus.BAD_REQUEST);
         }
 
-        int count = contest.getCandidateCount() != null ? contest.getCandidateCount() : 0;
-        int capacity = contest.getCandidateCapacity() != null ? contest.getCandidateCapacity() : 0;
+        int count = Objects.requireNonNullElse(contest.getCandidateCount(), 0);
+        int capacity = Objects.requireNonNullElse(contest.getCandidateCapacity(), 0);
 
         if (count >= capacity) {
             throw new CustomException("Contest capacity full", HttpStatus.BAD_REQUEST);
@@ -416,9 +417,11 @@ public class ContestVerificationService {
         if (questionBank != null) {
             for (Map<String, Object> q : questionBank) {
                 Object qId = q.get("question_id");
-                boolean matches = false;
-                if (qId instanceof Integer i) matches = i.equals(questionId);
-                else if (qId instanceof String s) matches = s.equals(String.valueOf(questionId));
+                boolean matches = switch (qId) {
+                    case Integer i -> i.equals(questionId);
+                    case String s -> s.equals(String.valueOf(questionId));
+                    default -> false;
+                };
 
                 if (matches) {
                     if (q.get("audio_id") == null) {

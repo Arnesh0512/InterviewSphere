@@ -57,7 +57,8 @@ public class CodingPrompts {
                                 "feedback": {"type": "string"},
                                 "score": {"type": "number"}
                             },
-                            "required": ["question_id", "feedback", "score"]
+                            "required": ["question_id", "feedback", "score"],
+                            "additionalProperties": false
                         }
                     },
                     "overall_feedback": {"type": "string"},
@@ -67,10 +68,21 @@ public class CodingPrompts {
                     "feedback_per_question",
                     "overall_feedback",
                     "overall_score"
-                ]
+                ],
+                "additionalProperties": false
             }
 
             """;
+
+
+
+
+
+
+
+
+
+
 
     public static final String COMBINED_DIFF_SESSION_FEEDBACK_PROMPT = """
             You are a senior coding interview evaluator.
@@ -81,12 +93,28 @@ public class CodingPrompts {
 
             {
                 "session_1": {
-                    "Problem Description": "Language: X\\nAnswer:\\nCode"
+                    "Problem:\\nProblem1": "Language: X1\\nAnswer:\\nCode1",
+                    "Problem:\\nProblem2": "Language: X2\\nAnswer:\\nCode2",
+                    ...
                 },
                 "session_2": {
                     ...
                 }
             }
+            The keys(Problem) in each item of each session_i is question given to candidate in that session.
+            The keys(Problem) is not at all user response and does not demonstarte user analysis
+            The keys(Problem) is a question from question bank
+            
+            The values(Language and Answer) in each item of each session_i is user response for that Problem(key)
+            If value is "Language: \\n Answer:\\n" it means user didnt attempt the Problem at all
+            Be strict in evaluation 
+            
+            CRITICAL RULE FOR UNATTEMPTED SESSIONS:
+            - If all answers across all sessions are empty/unattempted (i.e., equal to "Language: \\n Answer:\\n"),
+            you must explicitly state in all feedback fields (improvement, weaknesses, strengths, recommendations)
+            that the candidate did not provide any code or solutions for evaluation, 
+            and therefore no analytical comparison can be made. 
+            Do NOT fabricate or hallucinate improvement or strengths if no code exists.
 
             Interpretation Rules:
 
@@ -112,6 +140,7 @@ public class CodingPrompts {
             - Be strict, analytical, and professional.
             - Provide structured feedback (strengths, weaknesses, progression, recommendations).
             - Do NOT mention JSON or formatting.
+            -Do not provide very large or very small feedback.
 
             Return strictly valid JSON:
             {
@@ -136,15 +165,33 @@ public class CodingPrompts {
                             "recommendations": {"type": "string"}
                         },
                         "required": ["improvement", "weaknesses", "strengths", "recommendations"],
-                        "additionalProperties": False
+                        "additionalProperties": false
                     }
                 },
                 "required": ["feedback"],
-                "additionalProperties": False
+                "additionalProperties": false
             }
             """;
 
-    public static final String COMBINED_SAME_SESSION_FEEDBACK_PROMPT = """
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+
+public static final String COMBINED_SAME_SESSION_FEEDBACK_PROMPT = """
             You are a senior coding interview evaluator.
 
             You will receive multiple reattempts of the SAME coding interview session.
@@ -153,12 +200,29 @@ public class CodingPrompts {
 
             {
                 "session_1": {
-                    "Problem Description": "Language: X\\nAnswer:\\nCode"
+                    "Problem:\\nProblem1": "Language: X1\\nAnswer:\\nCode1",
+                    "Problem:\\nProblem2": "Language: X2\\nAnswer:\\nCode2",
+                    ...
                 },
                 "session_2": {
                     ...
                 }
             }
+            The keys(Problem) in each item of each session_i is question given to candidate in that session.
+            The keys(Problem) is not at all user response and does not demonstarte user analysis
+            The keys(Problem) is a question from question bank
+            
+            The values(Language and Answer) in each item of each session_i is user response for that Problem(key)
+            If value is "Language: \\n Answer:\\n" it means user didnt attempt the Problem at all
+            Be strict in evaluation 
+            
+            CRITICAL RULE FOR UNATTEMPTED SESSIONS:
+            - If all answers across all sessions are empty/unattempted (i.e., equal to "Language: \\n Answer:\\n"),
+            you must explicitly state in all feedback fields (improvement, weaknesses, strengths, recommendations)
+            that the candidate did not provide any code or solutions for evaluation, 
+            and therefore no analytical comparison can be made. 
+            Do NOT fabricate or hallucinate improvement or strengths if no code exists.
+            
 
             Interpretation Rules:
 
@@ -183,6 +247,7 @@ public class CodingPrompts {
             - Be strict, analytical, and professional.
             - Provide structured feedback (improvement, weaknesses, strengths, recommendations).
             - Do NOT mention JSON or formatting.
+            - Do not provide very large or very small feedback.
 
             Return strictly valid JSON:
             {
@@ -207,11 +272,11 @@ public class CodingPrompts {
                             "recommendations": {"type": "string"}
                         },
                         "required": ["improvement", "weaknesses", "strengths", "recommendations"],
-                        "additionalProperties": False
+                        "additionalProperties": false
                     }
                 },
                 "required": ["feedback"],
-                "additionalProperties": False
+                "additionalProperties": false
             }
             """;
 }

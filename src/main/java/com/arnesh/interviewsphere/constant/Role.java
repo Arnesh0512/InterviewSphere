@@ -75,6 +75,11 @@ public enum Role {
         this.value = value;
     }
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
     public static Role fromValue(String value) {
         if (value == null) {
             throw new IllegalArgumentException("Role value cannot be null");

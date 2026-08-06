@@ -645,6 +645,11 @@ public enum Company {
         this.value = value;
     }
 
+    @JsonValue
+    public String getValue() {
+        return value;
+    }
+
     public static Company fromValue(String value) {
         if (value == null) {
             throw new IllegalArgumentException("Company value cannot be null");
