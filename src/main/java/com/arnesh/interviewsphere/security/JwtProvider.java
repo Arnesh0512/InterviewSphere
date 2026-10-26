@@ -26,9 +26,7 @@ public class JwtProvider {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    /**
-     * Encodes payload dictionary into a signed JWT token.
-     */
+
     public String createAccessToken(Map<String, Object> payload) {
         return Jwts.builder()
                 .claims(payload)
@@ -36,9 +34,7 @@ public class JwtProvider {
                 .compact();
     }
 
-    /**
-     * Decodes and verifies JWT token signature and expiration.
-     */
+
     public Claims verifyAccessToken(String token) {
         try {
             Claims claims = Jwts.parser()
@@ -60,9 +56,7 @@ public class JwtProvider {
         }
     }
 
-    /**
-     * Generates a signed JWT access token for a user ID, email, and role.
-     */
+    
     public String generateAccessToken(java.util.UUID id, String email, String role) {
         Map<String, Object> payload = new java.util.HashMap<>();
         String idKey = "admin".equalsIgnoreCase(role) ? "admin_id" : "candidate_id";

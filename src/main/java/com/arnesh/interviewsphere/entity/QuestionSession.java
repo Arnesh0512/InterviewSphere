@@ -45,7 +45,7 @@ public class QuestionSession {
     private String status; // "active" or "passive"
 
     @Column(nullable = false)
-    private Integer time; // Session duration limit in minutes
+    private Integer time; // Session duration in minutes
 
     @CreationTimestamp
     @Column(name = "timestamp", nullable = false, updatable = false)

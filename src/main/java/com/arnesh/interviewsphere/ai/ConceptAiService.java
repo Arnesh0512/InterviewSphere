@@ -25,10 +25,10 @@ public class ConceptAiService {
     private final OpenAiService openAiService;
     private final ObjectMapper objectMapper;
 
-    /**
-     * Generates deep CS concept questions based on topics and previous session
-     * history[cite: 14].
-     */
+
+
+
+
     public QuestionListResponse generateConceptTopicQuestions(
             List<String> topics,
             int numQuestions,
@@ -58,9 +58,10 @@ public class ConceptAiService {
         }
     }
 
-    /**
-     * Evaluates answers to computer science concept questions[cite: 14].
-     */
+
+    
+
+
     public ConceptEvaluationResponse evaluateConceptTopicAnswers(
             List<String> topics,
             List<?> questionBank) {
@@ -88,10 +89,11 @@ public class ConceptAiService {
         }
     }
 
-    /**
-     * Generates combined feedback across DIFFERENT conceptual interview
-     * sessions[cite: 14].
-     */
+
+    
+
+
+
     public CombinedFeedbackDetails generateConceptCombinedDiffSessionFeedback(
             List<String> topics,
             Map<String, Object> sessionData) {
@@ -119,10 +121,12 @@ public class ConceptAiService {
         }
     }
 
-    /**
-     * Generates combined feedback across reattempts of the SAME conceptual
-     * interview session[cite: 14].
-     */
+
+    
+
+
+
+    
     public CombinedFeedbackDetails generateConceptCombinedSameSessionFeedback(
             List<String> topics,
             Map<String, Object> sessionData) {

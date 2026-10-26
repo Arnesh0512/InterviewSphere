@@ -24,9 +24,10 @@ public class CodingUtil {
     private final LeetCodeQuestionRepository leetCodeQuestionRepository;
     private final ThreadPoolTaskScheduler taskScheduler;
 
-    /**
-     * Gets all unique question IDs used in previous sessions for a coding track.
-     */
+
+    
+
+
     public List<Integer> getUsedCodingQuestionIds(UUID codingId) {
         List<QuestionSession> sessions = questionSessionRepository.findByCodingTrackId(codingId);
         Set<Integer> usedQuestions = new HashSet<>();
@@ -43,9 +44,10 @@ public class CodingUtil {
         return new ArrayList<>(usedQuestions);
     }
 
-    /**
-     * Retrieves previous coding session questions and formats them for feedback generation.
-     */
+
+    
+
+    
     public PreviousCodingSessionResponse previousCodingSessionQuestions(UUID codingId, Integer x, Integer sessionNumber) {
         List<QuestionSession> sessions;
 
@@ -124,9 +126,7 @@ public class CodingUtil {
                 .build();
     }
 
-    /**
-     * Schedules an auto-submit callback task when the session time expires.
-     */
+    
     public void autoSubmit(
             UUID codingId,
             UUID questionSessionId,

@@ -37,10 +37,7 @@ public class ContestVerificationService {
         private UUID contestId;
     }
 
-    // ==========================================
-    // 1. CONTEST & ELIGIBILITY VERIFICATION
-    // ==========================================
-
+    // 1. CONTEST & ELIGIBILITY VERIFICATION 
     public VerifiedContestResult verifyContestId(String contestIdStr) {
         UUID contestId = parseUuid(contestIdStr, "Invalid contest_id", HttpStatus.BAD_REQUEST);
 
@@ -132,10 +129,7 @@ public class ContestVerificationService {
         return normalizedFrontend;
     }
 
-    // ==========================================
     // 2. ROUND TIMING VERIFICATIONS
-    // ==========================================
-
     public void verifyResumeTimeOpen(OffsetDateTime timestamp, Contest contest) {
         OffsetDateTime start = contest.getResumeRound().getStart();
         OffsetDateTime end = contest.getResumeRound().getEnd();
@@ -214,10 +208,7 @@ public class ContestVerificationService {
         }
     }
 
-    // ==========================================
     // 3. SUBMISSION STATUS VERIFICATIONS
-    // ==========================================
-
     public void verifyCodingSubmit(ContestCandidateResponse contestCandidate) {
         Map<String, Object> coding = contestCandidate.getCoding();
         if (coding == null) {
@@ -248,10 +239,7 @@ public class ContestVerificationService {
         }
     }
 
-    // ==========================================
     // 4. QUESTION VERIFICATIONS
-    // ==========================================
-
     public void verifyCodingQuestion(Contest contest, Integer questionId) {
         Object questionsObj = contest.getCodingRound().getQuestions();
         if (questionsObj instanceof List<?> questionIds) {
@@ -306,10 +294,7 @@ public class ContestVerificationService {
         }
     }
 
-    // ==========================================
     // 5. RESULT DECLARATION VERIFICATIONS
-    // ==========================================
-
     public void verifyResumeResultTime(OffsetDateTime timestamp, Contest contest) {
         OffsetDateTime resultTime = contest.getResumeRound().getResult();
 
@@ -350,10 +335,7 @@ public class ContestVerificationService {
         }
     }
 
-    // ==========================================
     // 6. LEADERBOARD ADVANCEMENT VERIFICATIONS
-    // ==========================================
-
     public void verifyCandidatePassedResume(UUID candidateId, UUID contestId) {
         ContestLeaderboard leaderboard = contestLeaderboardRepository.findByContestId(contestId)
                 .orElseThrow(() -> new CustomException("Leaderboard not generated", HttpStatus.NOT_FOUND));
@@ -393,10 +375,7 @@ public class ContestVerificationService {
         }
     }
 
-    // ==========================================
     // 7. ADDITIONAL UTILITIES & ROUND DATA EXTRACTORS
-    // ==========================================
-
     public void verifyContestEndTime(OffsetDateTime timestamp, Contest contest) {
         OffsetDateTime contestEnd = contest.getContestEnd();
 

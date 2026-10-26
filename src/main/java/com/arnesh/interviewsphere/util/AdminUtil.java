@@ -17,9 +17,7 @@ public class AdminUtil {
 
     private final LeetCodeQuestionRepository leetCodeQuestionRepository;
 
-    /**
-     * Selects random coding questions by difficulty matching company tag.
-     */
+    
     public List<Integer> generateCodingIds(String company, int codingQuestionCount) {
         long totalCount = leetCodeQuestionRepository.countByCompaniesContaining(company);
 

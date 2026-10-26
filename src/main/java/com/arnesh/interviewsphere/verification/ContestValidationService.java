@@ -1,19 +1,21 @@
 package com.arnesh.interviewsphere.verification;
 
-import com.arnesh.interviewsphere.dto.request.ContestCreateRequest;
-import com.arnesh.interviewsphere.entity.Contest;
-import com.arnesh.interviewsphere.exception.CustomException;
-import com.arnesh.interviewsphere.repository.ContestRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import com.arnesh.interviewsphere.constant.Skill;
-
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import com.arnesh.interviewsphere.constant.Skill;
+import com.arnesh.interviewsphere.dto.request.ContestCreateRequest;
+import com.arnesh.interviewsphere.entity.Contest;
+import com.arnesh.interviewsphere.exception.CustomException;
+import com.arnesh.interviewsphere.repository.ContestRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +23,7 @@ public class ContestValidationService {
 
     private final ContestRepository contestRepository;
 
-    /**
-     * Checks if a contest with matching configuration already exists.
-     */
+    
     public boolean verifyDuplicateContest(ContestCreateRequest data) {
         List<Skill> sortedSkills = data.getSkills() != null 
                 ? data.getSkills().stream().sorted().toList() 
@@ -49,10 +49,7 @@ public class ContestValidationService {
         return true;
     }
 
-    /**
-     * Validates timeline sequencing, capacity limits, duration integrity, and
-     * question count constraints.
-     */
+    
     public void validateContestData(ContestCreateRequest data) {
         OffsetDateTime nowWithBuffer = OffsetDateTime.now().plusHours(1);
 
@@ -100,7 +97,6 @@ public class ContestValidationService {
             throw new CustomException("Selection sequence invalid", HttpStatus.BAD_REQUEST);
         }
 
-        // 3. Validate Round Durations
         if (Duration.between(resStart, resEnd).getSeconds() < resDuration) {
             throw new CustomException("Resume duration invalid", HttpStatus.BAD_REQUEST);
         }
@@ -114,7 +110,6 @@ public class ContestValidationService {
             throw new CustomException("HR duration invalid", HttpStatus.BAD_REQUEST);
         }
 
-        // 4. Validate Question Counts
         if (data.getResumeQuestionsCount() < 1
                 || data.getCodingQuestionsCount() < 1
                 || data.getConceptQuestionsCount() < 1
@@ -122,7 +117,6 @@ public class ContestValidationService {
             throw new CustomException("Error in number of questions", HttpStatus.BAD_REQUEST);
         }
 
-        // 5. Validate Time Allocated per Question (duration in minutes)
         if ((resDuration / 60.0) < data.getResumeQuestionsCount()
                 || (codDuration / 60.0) < data.getCodingQuestionsCount()
                 || (conDuration / 60.0) < data.getConceptQuestionsCount()
@@ -131,9 +125,7 @@ public class ContestValidationService {
         }
     }
 
-    /**
-     * Verifies contest existence by UUID.
-     */
+    
     public Contest verifyContestId(String contestIdStr) {
         UUID contestId;
         try {

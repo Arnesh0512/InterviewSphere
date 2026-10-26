@@ -48,13 +48,7 @@ public class GithubVerificationService {
         private OffsetDateTime backendTime;
     }
 
-    // ==========================================
     // 1. GITHUB LINK & REPO API VERIFICATION
-    // ==========================================
-
-    /**
-     * Verifies if a given GitHub user profile URL exists[cite: 21].
-     */
     public void verifyGithubLink(String githubLink) {
         if (githubLink == null || githubLink.isBlank()) {
             throw new CustomException("GitHub link required", HttpStatus.BAD_REQUEST);
@@ -79,9 +73,7 @@ public class GithubVerificationService {
         }
     }
 
-    /**
-     * Verifies if a given GitHub repository URL exists[cite: 21].
-     */
+    
     public void verifyGithubRepo(String repoLink) {
         if (repoLink == null || repoLink.isBlank()) {
             throw new CustomException("Repository link required", HttpStatus.BAD_REQUEST);
@@ -108,10 +100,7 @@ public class GithubVerificationService {
         }
     }
 
-    /**
-     * Verifies that the GitHub profile matches the owner of the repository[cite:
-     * 21].
-     */
+    
     public void verifyGithubLinkRepo(String githubLink, String repoLink) {
         verifyGithubLink(githubLink);
         verifyGithubRepo(repoLink);
@@ -126,13 +115,7 @@ public class GithubVerificationService {
         }
     }
 
-    // ==========================================
     // 2. TRACK & SESSION VERIFICATION
-    // ==========================================
-
-    /**
-     * Verifies existence and ownership of a GitHub track for a candidate[cite: 21].
-     */
     public VerifiedGithubResult verifyGithub(String githubIdStr, UUID candidateId) {
         UUID githubId = parseUuid(githubIdStr, "Invalid github_id", HttpStatus.BAD_REQUEST);
 
@@ -146,10 +129,7 @@ public class GithubVerificationService {
                 .build();
     }
 
-    /**
-     * Verifies existence of a question session belonging to a GitHub track[cite:
-     * 21].
-     */
+    
     public VerifiedSessionResult verifyQuestionSession(String questionSessionIdStr, UUID githubId) {
         UUID sessionObjId = parseUuid(questionSessionIdStr, "Invalid question_session_id", HttpStatus.BAD_REQUEST);
 
@@ -163,10 +143,7 @@ public class GithubVerificationService {
                 .build();
     }
 
-    /**
-     * Verifies if a given question number is within valid bounds for the session's
-     * question bank[cite: 21].
-     */
+    
     public void verifyQuestionId(QuestionSession sessionDoc, int questionId) {
         List<QuestionSession.Question> questionBank = sessionDoc.getQuestionBank() != null
                 ? sessionDoc.getQuestionBank()
@@ -177,28 +154,21 @@ public class GithubVerificationService {
         }
     }
 
-    /**
-     * Verifies that the question session status is 'active'[cite: 21].
-     */
+    
     public void verifySessionStatus(QuestionSession sessionDoc) {
         if (!"active".equalsIgnoreCase(sessionDoc.getStatus())) {
             throw new CustomException("Session is not active", HttpStatus.BAD_REQUEST);
         }
     }
 
-    /**
-     * Verifies that the question session status is 'passive'[cite: 21].
-     */
+    
     public void verifySessionStatus2(QuestionSession sessionDoc) {
         if (!"passive".equalsIgnoreCase(sessionDoc.getStatus())) {
             throw new CustomException("Session is not passive", HttpStatus.BAD_REQUEST);
         }
     }
 
-    /**
-     * Verifies whether session time has expired. If expired, updates status to
-     * 'passive'[cite: 21].
-     */
+    
     public void verifySessionTime(QuestionSession sessionDoc, UUID sessionObjId) {
         OffsetDateTime startTime = sessionDoc.getTimestamp().withOffsetSameInstant(ZoneOffset.UTC);
         int totalTime = Objects.requireNonNullElse(sessionDoc.getTime(), 0);
@@ -215,10 +185,7 @@ public class GithubVerificationService {
         }
     }
 
-    /**
-     * Verifies that frontend submission time does not drift more than 2 minutes
-     * from backend time[cite: 21].
-     */
+    
     public VerifiedTimestampResult verifyTimestamp(OffsetDateTime frontendTime) {
         if (frontendTime == null) {
             throw new CustomException("Invalid frontend timestamp format", HttpStatus.BAD_REQUEST);

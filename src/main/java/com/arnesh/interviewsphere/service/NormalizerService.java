@@ -27,9 +27,7 @@ public class NormalizerService {
         OffsetDateTime latestSubmission = null;
     }
 
-    /**
-     * Step 1 - 4: Z-score Normalization, Accumulation, Tie-break Sorting, Ranking, and Percentiles
-     */
+    
     public List<RankedCandidate> normalizeAndRank(List<List<CandidateQuestionScore>> candidatesScores) {
         if (candidatesScores == null || candidatesScores.isEmpty()) {
             return Collections.emptyList();
@@ -156,9 +154,7 @@ public class NormalizerService {
         return finalRanked;
     }
 
-    /**
-     * Finalizes overall contest leaderboard by summing round normalized scores across sections.
-     */
+    
     public List<RankedCandidate> finalizeLeaderboard(List<List<RankedCandidate>> sectionOutputs) {
         if (sectionOutputs == null || sectionOutputs.isEmpty()) {
             return Collections.emptyList();

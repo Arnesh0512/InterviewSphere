@@ -37,13 +37,10 @@ public class OpenAiService {
     private final AppProperties appProperties;
     private final WebClient.Builder webClientBuilder;
 
-    /**
-     * Executes structured Chat completions using GPT models.
-     */
+    
     public String callChatGpt(String systemPrompt, String userContent, double temperature, String jsonSchema) {
         try {
             System.out.println(userContent);
-            // Use Spring AI 2.0's built-in OpenAiChatModel.ResponseFormat definition
             OpenAiChatModel.ResponseFormat responseFormat = OpenAiChatModel.ResponseFormat.builder()
                     .type(OpenAiChatModel.ResponseFormat.Type.JSON_SCHEMA)
                     .jsonSchema(jsonSchema)
@@ -83,7 +80,6 @@ public class OpenAiService {
             throw new CustomException("Audio file not found at path: " + wavPath, HttpStatus.NOT_FOUND);
         }
 
-        // 1. Call OpenAI Whisper API for transcription[cite: 9]
         WebClient client = webClientBuilder
                 .baseUrl("https://api.openai.com/v1")
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + appProperties.getOpenAiApiKey())
@@ -113,11 +109,9 @@ public class OpenAiService {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        // 2. Compute audio duration using Java Sound API[cite: 9]
         double durationInSeconds = getWavDurationInSeconds(file);
         double roundedDuration = Math.round(durationInSeconds * 100.0) / 100.0;
 
-        // 3. Format output response[cite: 9]
         AudioTranscriptionResponse.SegmentData segment = AudioTranscriptionResponse.SegmentData.builder()
                 .start(0.0)
                 .end(roundedDuration)

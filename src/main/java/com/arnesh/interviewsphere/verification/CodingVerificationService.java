@@ -46,9 +46,7 @@ public class CodingVerificationService {
         private OffsetDateTime backendTime;
     }
 
-    /**
-     * Verifies existence and ownership of a coding track for a candidate[cite: 20].
-     */
+    
     public VerifiedCodingResult verifyCoding(String codingIdStr, UUID candidateId) {
         UUID codingId = parseUuid(codingIdStr, "Invalid coding_id", HttpStatus.BAD_REQUEST);
 
@@ -62,9 +60,7 @@ public class CodingVerificationService {
                 .build();
     }
 
-    /**
-     * Verifies that requested question quantity is valid and available[cite: 20].
-     */
+    
     public void verifyQuantity(int numQuestion, PracticeCodingTrack codingTrack) {
         if (numQuestion <= 0) {
             throw new CustomException("Number of questions must be greater than 0.", HttpStatus.BAD_REQUEST);
@@ -79,10 +75,7 @@ public class CodingVerificationService {
         }
     }
 
-    /**
-     * Verifies existence of a question session belonging to a coding track[cite:
-     * 20].
-     */
+    
     public VerifiedSessionResult verifyQuestionSession(String questionSessionIdStr, UUID codingId) {
         UUID sessionObjId = parseUuid(questionSessionIdStr, "Invalid question_session_id", HttpStatus.BAD_REQUEST);
 
@@ -96,10 +89,7 @@ public class CodingVerificationService {
                 .build();
     }
 
-    /**
-     * Verifies if a given question ID exists in the session's question bank[cite:
-     * 20].
-     */
+    
     public Integer verifyQuestionId(QuestionSession sessionDoc, Integer questionId) {
         List<QuestionSession.Question> questionBank = sessionDoc.getQuestionBank() != null
                 ? sessionDoc.getQuestionBank()
@@ -117,28 +107,21 @@ public class CodingVerificationService {
         return questionId;
     }
 
-    /**
-     * Verifies that the question session status is 'active'[cite: 20].
-     */
+    
     public void verifySessionStatus(QuestionSession sessionDoc) {
         if (!"active".equalsIgnoreCase(sessionDoc.getStatus())) {
             throw new CustomException("Session is not active", HttpStatus.BAD_REQUEST);
         }
     }
 
-    /**
-     * Verifies that the question session status is 'passive'[cite: 20].
-     */
+    
     public void verifySessionStatus2(QuestionSession sessionDoc) {
         if (!"passive".equalsIgnoreCase(sessionDoc.getStatus())) {
             throw new CustomException("Session is not passive", HttpStatus.BAD_REQUEST);
         }
     }
 
-    /**
-     * Verifies whether session time has expired. If expired, updates status to
-     * 'passive'[cite: 20].
-     */
+    
     public void verifySessionTime(QuestionSession sessionDoc, UUID sessionObjId) {
         OffsetDateTime startTime = sessionDoc.getTimestamp().withOffsetSameInstant(ZoneOffset.UTC);
         int totalTime = Objects.requireNonNullElse(sessionDoc.getTime(), 0);
@@ -154,10 +137,7 @@ public class CodingVerificationService {
         }
     }
 
-    /**
-     * Verifies that frontend submission time does not drift more than 2 minutes
-     * from backend time[cite: 20].
-     */
+    
     public VerifiedTimestampResult verifyTimestamp(OffsetDateTime frontendTime) {
         if (frontendTime == null) {
             throw new CustomException("Invalid frontend timestamp format", HttpStatus.BAD_REQUEST);

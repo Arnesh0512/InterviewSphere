@@ -1,15 +1,17 @@
 package com.arnesh.interviewsphere.service;
 
-import com.arnesh.interviewsphere.entity.Contest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.stereotype.Service;
-
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import java.util.function.Consumer;
+
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.stereotype.Service;
+
+import com.arnesh.interviewsphere.entity.Contest;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
@@ -18,10 +20,7 @@ public class ContestSchedulerService {
 
     private final ThreadPoolTaskScheduler taskScheduler;
 
-    /**
-     * Schedules tasks to trigger round evaluation and leaderboard generation at
-     * specified result times.
-     */
+    
     public void runContestScheduler(
             Contest contest,
             String token,
@@ -46,7 +45,6 @@ public class ContestSchedulerService {
         if (delayInSeconds > 0) {
             taskScheduler.schedule(task, targetTime.toInstant());
         } else {
-            // If the time has already passed, execute immediately
             task.run();
         }
     }

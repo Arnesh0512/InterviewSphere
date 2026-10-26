@@ -5,4 +5,5 @@ target
 *.log
 hs_err_pid*
 .env
+**/.env
 src/main/resources/application.properties

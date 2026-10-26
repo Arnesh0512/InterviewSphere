@@ -22,9 +22,7 @@ public class CodingAiService {
     private final OpenAiService openAiService;
     private final ObjectMapper objectMapper;
 
-    /**
-     * Evaluates coding question responses against LLM prompt guidelines.
-     */
+
     public CodingEvaluationResponse evaluateCodingAnswers(List<?> questions) {
         try {
             String content = "Coding Questions and Answers:\n\n"
@@ -45,9 +43,11 @@ public class CodingAiService {
         }
     }
 
-    /**
-     * Generates combined feedback across DIFFERENT coding sessions.
-     */
+
+    
+
+
+
     public CombinedFeedbackDetails generateCodingCombinedDiffSessionFeedback(Map<String, Object> sessionData) {
         try {
             String content = "Session wise Coding Attempts:\n"
@@ -67,9 +67,11 @@ public class CodingAiService {
         }
     }
 
-    /**
-     * Generates combined feedback across reattempts of the SAME coding session.
-     */
+
+    
+
+
+    
     public CombinedFeedbackDetails generateCodingCombinedSameSessionFeedback(Map<String, Object> sessionData) {
         try {
             String content = "Session wise Coding Attempts:\n"

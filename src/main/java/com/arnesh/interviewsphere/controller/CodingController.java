@@ -26,7 +26,7 @@ public class CodingController {
 
     private final CodingService codingService;
 
-    // 1. Start Coding Track[cite: 50]
+    // 1. Start Coding Track
     @PostMapping("/start-coding")
     public ResponseEntity<ApiResponse<Map<String, Object>>> startCoding(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -40,7 +40,7 @@ public class CodingController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 2. Get All Coding Tracks[cite: 50]
+    // 2. Get All Coding Tracks
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getAllCodings(
             @AuthenticationPrincipal UserPrincipal principal
@@ -49,7 +49,7 @@ public class CodingController {
         return ResponseEntity.ok(ApiResponse.success(codings));
     }
 
-    // 3. Submit Session[cite: 50]
+    // 3. Submit Session
     @PostMapping("/questions/submit")
     public ResponseEntity<ApiResponse<Map<String, Object>>> submitSession(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -61,7 +61,7 @@ public class CodingController {
         return ResponseEntity.ok(ApiResponse.success(Map.of("success", true)));
     }
 
-    // 4. Generate New Questions Session[cite: 50]
+    // 4. Generate New Questions Session
     @PostMapping("/questions/new")
     public ResponseEntity<ApiResponse<Map<String, Object>>> generateQuestions(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -72,7 +72,7 @@ public class CodingController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 5. Save Single Answer[cite: 50]
+    // 5. Save Single Answer
     @PostMapping("/questions/save")
     public ResponseEntity<ApiResponse<Map<String, Object>>> saveAnswer(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -84,7 +84,7 @@ public class CodingController {
         return ResponseEntity.ok(ApiResponse.success(Map.of("success", true)));
     }
 
-    // 6. Reattempt Question Session[cite: 50]
+    // 6. Reattempt Question Session
     @PutMapping("/questions/reattempt")
     public ResponseEntity<ApiResponse<Map<String, String>>> reattemptSession(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -95,7 +95,7 @@ public class CodingController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 7. Fake Submit Session[cite: 50]
+    // 7. Fake Submit Session
     @PatchMapping("/questions/fake/submit")
     public ResponseEntity<ApiResponse<Map<String, Object>>> fakeSubmitSession(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -106,7 +106,7 @@ public class CodingController {
         return ResponseEntity.ok(ApiResponse.success(Map.of("success", true)));
     }
 
-    // 8. Generate AI Feedback[cite: 50]
+    // 8. Generate AI Feedback
     @GetMapping("/questions/feedback")
     public ResponseEntity<ApiResponse<CodingAiResponses.CodingEvaluationResponse>> generateFeedback(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -117,7 +117,7 @@ public class CodingController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 9. Get All Sessions[cite: 50]
+    // 9. Get All Sessions
     @GetMapping("/questions/sessions")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getAllSessions(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -127,7 +127,7 @@ public class CodingController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 10. Get Single Session Data[cite: 50]
+    // 10. Get Single Session Data
     @GetMapping("/questions/data")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getSessionData(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -138,7 +138,7 @@ public class CodingController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 11. Delete Coding Track[cite: 50]
+    // 11. Delete Coding Track
     @DeleteMapping("/delete")
     public ResponseEntity<ApiResponse<Map<String, Object>>> deleteCoding(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -148,7 +148,7 @@ public class CodingController {
         return ResponseEntity.ok(ApiResponse.success(Map.of("success", true)));
     }
 
-    // 12. Delete Single Session[cite: 50]
+    // 12. Delete Single Session
     @DeleteMapping("/questions/delete")
     public ResponseEntity<ApiResponse<Map<String, Object>>> deleteSession(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -159,7 +159,7 @@ public class CodingController {
         return ResponseEntity.ok(ApiResponse.success(Map.of("success", true)));
     }
 
-    // 13. Delete Answers and Reattempt[cite: 50]
+    // 13. Delete Answers and Reattempt
     @PutMapping("/questions/delete-reattempt")
     public ResponseEntity<ApiResponse<Map<String, Object>>> deleteAndReattempt(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -170,7 +170,7 @@ public class CodingController {
         return ResponseEntity.ok(ApiResponse.success(Map.of("success", true)));
     }
 
-    // 14. Combined Feedback Across Different Sessions[cite: 50]
+    // 14. Combined Feedback Across Different Sessions
     @GetMapping("/progress/coding")
     public ResponseEntity<ApiResponse<Map<String, Object>>> combinedFeedbackLastXSessions(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -181,7 +181,7 @@ public class CodingController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 15. Combined Feedback Within Same Session Reattempts[cite: 50]
+    // 15. Combined Feedback Within Same Session Reattempts
     @GetMapping("/progress/session")
     public ResponseEntity<ApiResponse<Map<String, Object>>> combinedFeedbackSameSession(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -193,7 +193,7 @@ public class CodingController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 16. Get Different Combined Feedback History[cite: 50]
+    // 16. Get Different Combined Feedback History
     @GetMapping("/progress/coding/all")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getDifferentCombinedFeedback(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -203,7 +203,7 @@ public class CodingController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 17. Get Same Combined Feedback History[cite: 50]
+    // 17. Get Same Combined Feedback History
     @GetMapping("/progress/session/all")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getSameCombinedFeedback(
             @AuthenticationPrincipal UserPrincipal principal,

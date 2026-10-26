@@ -263,7 +263,6 @@ public class ConceptService {
 
         List<String> topicStrings = verifiedConcept.getConceptTrack().getTopics();
         
-        // Pass session.getQuestionBank() directly without raw (List) casting
         ConceptAiResponses.ConceptEvaluationResponse evaluation = conceptAiService.evaluateConceptTopicAnswers(
                 topicStrings, session.getQuestionBank());
 

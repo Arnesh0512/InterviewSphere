@@ -31,9 +31,7 @@ public class ContestEvaluationUtil {
     private final ContestAiService contestAiService;
     private final ThreadPoolTaskScheduler taskScheduler;
 
-    /**
-     * Schedules an auto-submit task to run when the contest end time arrives.
-     */
+    
     public void autoSubmit(
             UUID contestId,
             String token,
@@ -51,10 +49,7 @@ public class ContestEvaluationUtil {
         }
     }
 
-    /**
-     * Evaluates candidate coding submissions, assigns AI scores & feedback, and
-     * updates DB.
-     */
+    
     @SuppressWarnings("unchecked")
     public void generateCodingScores(UUID contestId, UUID candidateId, ContestCandidateResponse contestCandidate) {
         Map<String, Object> codingData = contestCandidate.getCoding();
@@ -107,10 +102,7 @@ public class ContestEvaluationUtil {
         contestCandidateResponseRepository.save(contestCandidate);
     }
 
-    /**
-     * Evaluates candidate concept submissions, assigns AI scores & feedback, and
-     * updates DB.
-     */
+    
     @SuppressWarnings("unchecked")
     public void generateConceptScores(UUID contestId, UUID candidateId, ContestCandidateResponse contestCandidate) {
         Map<String, Object> conceptData = contestCandidate.getConcept();
@@ -159,10 +151,7 @@ public class ContestEvaluationUtil {
         contestCandidateResponseRepository.save(contestCandidate);
     }
 
-    /**
-     * Evaluates candidate HR audio/transcript submissions, assigns AI scores &
-     * feedback, and updates DB.
-     */
+    
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void generateHrScores(UUID contestId, UUID candidateId, ContestCandidateResponse contestCandidate) {
         Map<String, Object> hrData = contestCandidate.getHr();

@@ -26,9 +26,7 @@ public class CandidateVerificationService {
         private String email;
     }
 
-    /**
-     * Verifies token payload for candidate permissions[cite: 19].
-     */
+    
     public VerifiedCandidateResult verifyCandidatePayload(Map<String, Object> payload) {
         String candidateIdStr = (String) payload.get("candidate_id");
         String email = (String) payload.get("email");
@@ -45,9 +43,7 @@ public class CandidateVerificationService {
         return verifyCandidate(candidateIdStr, email, "Y");
     }
 
-    /**
-     * Verifies candidate existence by ID and email[cite: 19].
-     */
+    
     public VerifiedCandidateResult verifyCandidate(String candidateIdStr, String email, String type) {
         String normalizedEmail = email.toLowerCase();
         UUID candidateId = parseUuid(candidateIdStr);
@@ -69,9 +65,7 @@ public class CandidateVerificationService {
                 .build();
     }
 
-    /**
-     * Verifies candidate existence by email alone[cite: 19].
-     */
+    
     public VerifiedCandidateResult verifyCandidateByEmail(String email, String type) {
         String normalizedEmail = email.toLowerCase();
         Candidate candidate = candidateRepository.findByEmail(normalizedEmail).orElse(null);
@@ -98,9 +92,7 @@ public class CandidateVerificationService {
                 .build();
     }
 
-    /**
-     * Verifies candidate existence by UUID alone[cite: 19].
-     */
+    
     public VerifiedCandidateResult verifyCandidateById(String candidateIdStr, String type) {
         UUID candidateId = parseUuid(candidateIdStr);
         Candidate candidate = candidateRepository.findById(candidateId).orElse(null);

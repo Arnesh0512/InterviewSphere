@@ -1,6 +1,8 @@
 package com.arnesh.interviewsphere.service;
 
-import com.arnesh.interviewsphere.exception.CustomException;
+import java.io.IOException;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -9,8 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.io.IOException;
-import java.util.UUID;
+import com.arnesh.interviewsphere.exception.CustomException;
 
 @Service
 public class SupabaseStorageService {
@@ -27,16 +28,7 @@ public class SupabaseStorageService {
         this.webClient = webClientBuilder.build();
     }
 
-    /**
-     * Uploads a file (PDF/MP3/Audio/Image) to a Supabase Storage Bucket and returns
-     * its public URL.
-     * Replaces GridFS storage operations.
-     *
-     * @param bucketName Supabase storage bucket name (e.g., "resumes",
-     *                   "contest-audio")
-     * @param file       MultipartFile received from Controller
-     * @return Public CDN URL string of the uploaded file
-     */
+    
     public String uploadFile(String bucketName, MultipartFile file) {
         if (file.isEmpty()) {
             throw new CustomException("Failed to upload empty file.", HttpStatus.BAD_REQUEST);
@@ -48,7 +40,6 @@ public class SupabaseStorageService {
             extension = originalFilename.substring(originalFilename.lastIndexOf("."));
         }
 
-        // Generate a unique filename to prevent collisions
         String uniqueFileName = UUID.randomUUID() + extension;
         String uploadUrl = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + uniqueFileName;
 
@@ -66,7 +57,6 @@ public class SupabaseStorageService {
                     .toBodilessEntity()
                     .block();
 
-            // Return public accessible URL
             return supabaseUrl + "/storage/v1/object/public/" + bucketName + "/" + uniqueFileName;
 
         } catch (IOException e) {
@@ -77,9 +67,7 @@ public class SupabaseStorageService {
         }
     }
 
-    /**
-     * Deletes a file from Supabase Storage bucket by filename.
-     */
+    
     public void deleteFile(String bucketName, String fileName) {
         String deleteUrl = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + fileName;
 

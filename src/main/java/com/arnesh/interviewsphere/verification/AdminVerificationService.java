@@ -26,9 +26,10 @@ public class AdminVerificationService {
         private String email;
     }
 
-    /**
-     * Verifies token payload for admin permissions[cite: 18].
-     */
+
+    
+
+
     public VerifiedAdminResult verifyAdminPayload(Map<String, Object> payload) {
         String adminIdStr = (String) payload.get("admin_id");
         String email = (String) payload.get("email");
@@ -45,9 +46,10 @@ public class AdminVerificationService {
         return verifyAdmin(adminIdStr, email, "Y");
     }
 
-    /**
-     * Verifies admin existence by ID and email[cite: 18].
-     */
+
+    
+
+
     public VerifiedAdminResult verifyAdmin(String adminIdStr, String email, String type) {
         String normalizedEmail = email.toLowerCase();
         UUID adminId = parseUuid(adminIdStr);
@@ -69,9 +71,10 @@ public class AdminVerificationService {
                 .build();
     }
 
-    /**
-     * Verifies admin existence by email alone[cite: 18].
-     */
+
+    
+
+
     public VerifiedAdminResult verifyAdminByEmail(String email, String type) {
         String normalizedEmail = email.toLowerCase();
         Admin admin = adminRepository.findByEmail(normalizedEmail).orElse(null);
@@ -98,9 +101,10 @@ public class AdminVerificationService {
                 .build();
     }
 
-    /**
-     * Verifies admin existence by UUID alone[cite: 18].
-     */
+
+    
+
+    
     public VerifiedAdminResult verifyAdminById(String adminIdStr, String type) {
         UUID adminId = parseUuid(adminIdStr);
         Admin admin = adminRepository.findById(adminId).orElse(null);

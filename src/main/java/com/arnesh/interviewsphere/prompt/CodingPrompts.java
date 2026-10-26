@@ -3,7 +3,6 @@ package com.arnesh.interviewsphere.prompt;
 public class CodingPrompts {
 
     private CodingPrompts() {
-        // Private constructor to prevent instantiation
     }
 
     public static final String EVALUATE_CODING_ANSWERS_PROMPT = """

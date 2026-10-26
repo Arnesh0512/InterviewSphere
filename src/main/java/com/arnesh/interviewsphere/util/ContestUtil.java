@@ -19,9 +19,7 @@ public class ContestUtil {
     private final ContestCandidateResponseRepository contestCandidateResponseRepository;
     private final CandidateRepository candidateRepository;
 
-    /**
-     * Handles auto-submission for candidate coding rounds.
-     */
+    
     public void fakeSubmitCandidateCoding(UUID contestId, List<UUID> fakeSubmitIds) {
         if (fakeSubmitIds == null || fakeSubmitIds.isEmpty()) {
             return;
@@ -38,9 +36,7 @@ public class ContestUtil {
         }
     }
 
-    /**
-     * Formats leaderboard entries by joining candidate entity fields.
-     */
+    
     public List<LeaderboardEntryResponse> formatLeaderboard(List<ContestCandidateResponse> entries) {
         List<UUID> candidateIds = entries.stream()
                 .map(r -> r.getCandidateId())

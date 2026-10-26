@@ -1,13 +1,17 @@
 package com.arnesh.interviewsphere.util;
 
-import com.arnesh.interviewsphere.config.AppProperties;
-import com.arnesh.interviewsphere.dto.response.GithubRepoDetailsResponse;
-import com.arnesh.interviewsphere.dto.response.GithubRepositoryResponse;
-import com.arnesh.interviewsphere.dto.response.PreviousGithubSessionResponse;
-import com.arnesh.interviewsphere.entity.QuestionSession;
-import com.arnesh.interviewsphere.exception.CustomException;
-import com.arnesh.interviewsphere.repository.QuestionSessionRepository;
-import lombok.RequiredArgsConstructor;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.function.Consumer;
+
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,11 +19,15 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.function.Consumer;
+import com.arnesh.interviewsphere.config.AppProperties;
+import com.arnesh.interviewsphere.dto.response.GithubRepoDetailsResponse;
+import com.arnesh.interviewsphere.dto.response.GithubRepositoryResponse;
+import com.arnesh.interviewsphere.dto.response.PreviousGithubSessionResponse;
+import com.arnesh.interviewsphere.entity.QuestionSession;
+import com.arnesh.interviewsphere.exception.CustomException;
+import com.arnesh.interviewsphere.repository.QuestionSessionRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -64,9 +72,7 @@ public class GithubUtil {
         }
     }
 
-    /**
-     * Fetches public repositories for a given GitHub profile URL.
-     */
+    
     public List<GithubRepositoryResponse> fetchRepositories(String githubUrl) {
         if (githubUrl == null || githubUrl.isBlank()) {
             throw new CustomException("Invalid GitHub URL provided.", HttpStatus.BAD_REQUEST);
@@ -108,10 +114,7 @@ public class GithubUtil {
         }
     }
 
-    /**
-     * Fetches details, language breakdown, and decoded README for a selected GitHub
-     * repository link.
-     */
+    
     public GithubRepoDetailsResponse fetchRepoDetails(String selectedRepoLink) {
         if (selectedRepoLink == null || selectedRepoLink.isBlank()) {
             throw new CustomException("Invalid repository link provided.", HttpStatus.BAD_REQUEST);
@@ -128,7 +131,6 @@ public class GithubUtil {
         WebClient client = createGithubClient();
 
         try {
-            // 1. Fetch Repository Base Data
             Map<String, Object> repoData = client.get()
                     .uri("/repos/{owner}/{repo}", owner, repoName)
                     .retrieve()
@@ -144,7 +146,6 @@ public class GithubUtil {
             String description = repoData.get("description") != null ? (String) repoData.get("description") : "";
             String languagesUrl = (String) repoData.get("languages_url");
 
-            // 2. Fetch Languages Breakdown
             Map<String, Object> languages = new HashMap<>();
             if (languagesUrl != null) {
                 try {
@@ -155,7 +156,6 @@ public class GithubUtil {
                             })
                             .block();
                 } catch (Exception ignored) {
-                    // Non-critical endpoint
                 }
             }
 
@@ -175,7 +175,6 @@ public class GithubUtil {
                     decodedReadme = new String(decodedBytes, StandardCharsets.UTF_8);
                 }
             } catch (Exception ignored) {
-                // README might be missing
             }
 
             if (description.isBlank() && decodedReadme.isBlank()) {
@@ -197,10 +196,7 @@ public class GithubUtil {
         }
     }
 
-    /**
-     * Retrieves previous GitHub session questions and formats them for feedback
-     * generation.
-     */
+    
     public PreviousGithubSessionResponse previousGithubSessionQuestions(UUID githubId, Integer x,
             Integer sessionNumber) {
         List<QuestionSession> allSessions;
@@ -259,9 +255,7 @@ public class GithubUtil {
                 .build();
     }
 
-    /**
-     * Schedules an auto-submit callback task when the GitHub session time expires.
-     */
+    
     public void autoSubmit(
             UUID githubId,
             UUID questionSessionId,

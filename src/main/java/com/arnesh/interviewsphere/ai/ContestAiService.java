@@ -23,14 +23,14 @@ public class ContestAiService {
     private final OpenAiService openAiService;
     private final ObjectMapper objectMapper;
 
-    /**
-     * Generates a technical summary string from resume text.
-     */
+
+
+
+
+
     public String generateSummary(String resumeText) {
         try {
             String content = "Resume Content:\n" + resumeText;
-            // Note: Since ContestPrompts.GENERATE_SUMMARY returns a plain string, 
-            // we call callChatGpt or directly return the output text without JSON mapping.
             String rawResponse = openAiService.callChatGpt(ContestPrompts.GENERATE_SUMMARY_PROMPT, content, 0.2, ContestPrompts.GENERATE_SUMMARY_RESPONSE);
 
             if (rawResponse == null || rawResponse.isBlank()) {
@@ -46,10 +46,11 @@ public class ContestAiService {
         }
     }
 
-    /**
-     * Evaluates candidate resume evidence against a set of interview
-     * questions[cite: 15].
-     */
+
+    
+
+
+
     public ContestEvaluationResponse evaluateResumeScore(
             String resumeText,
             List<Map<String, Object>> resumeQuestions,
@@ -82,9 +83,11 @@ public class ContestAiService {
         }
     }
 
-    /**
-     * Evaluates coding solutions in a contest[cite: 15].
-     */
+
+    
+
+
+
     public ContestEvaluationResponse evaluateCodingScore(Object evaluationInput) {
         try {
             String content = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(evaluationInput);
@@ -98,9 +101,11 @@ public class ContestAiService {
         }
     }
 
-    /**
-     * Evaluates conceptual answers in a contest[cite: 15].
-     */
+
+    
+
+
+
     public ContestEvaluationResponse evaluateConceptScore(Object evaluationInput) {
         try {
             String content = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(evaluationInput);
@@ -114,10 +119,11 @@ public class ContestAiService {
         }
     }
 
-    /**
-     * Evaluates HR transcript answers against candidate resume summary[cite:
-     * 15].
-     */
+
+    
+
+
+    
     public ContestEvaluationResponse evaluateHrScore(Object evaluationInput, String resumeSummary) {
         try {
             Map<String, Object> payload = Map.of(

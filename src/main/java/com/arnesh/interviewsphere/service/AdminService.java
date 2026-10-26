@@ -1,12 +1,30 @@
 package com.arnesh.interviewsphere.service;
 
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.arnesh.interviewsphere.ai.AdminAiService;
 import com.arnesh.interviewsphere.dto.request.ContestCreateRequest;
 import com.arnesh.interviewsphere.dto.request.UserCreateRequest;
 import com.arnesh.interviewsphere.dto.response.LeaderboardEntryResponse;
-import com.arnesh.interviewsphere.entity.*;
+import com.arnesh.interviewsphere.entity.Admin;
+import com.arnesh.interviewsphere.entity.Candidate;
+import com.arnesh.interviewsphere.entity.Contest;
+import com.arnesh.interviewsphere.entity.ContestCandidateResponse;
+import com.arnesh.interviewsphere.entity.ContestLeaderboard;
 import com.arnesh.interviewsphere.exception.CustomException;
-import com.arnesh.interviewsphere.repository.*;
+import com.arnesh.interviewsphere.repository.AdminRepository;
+import com.arnesh.interviewsphere.repository.ContestCandidateResponseRepository;
+import com.arnesh.interviewsphere.repository.ContestLeaderboardRepository;
+import com.arnesh.interviewsphere.repository.ContestRepository;
 import com.arnesh.interviewsphere.security.UserPrincipal;
 import com.arnesh.interviewsphere.util.AdminUtil;
 import com.arnesh.interviewsphere.util.ContestUtil;
@@ -15,13 +33,8 @@ import com.arnesh.interviewsphere.verification.AdminVerificationService;
 import com.arnesh.interviewsphere.verification.CandidateVerificationService;
 import com.arnesh.interviewsphere.verification.ContestValidationService;
 import com.arnesh.interviewsphere.verification.ContestVerificationService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
-import java.util.*;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -134,7 +147,7 @@ public class AdminService {
                 .end(request.getResumeRound().getEnd())
                 .duration(request.getResumeRound().getDuration())
                 .result(request.getResumeRound().getResult())
-                .questions(resumeQuestionsList) // <-- Attach the list here
+                .questions(resumeQuestionsList)
                 .build();
 
         Contest.RoundTimeDto codingRound = Contest.RoundTimeDto.builder()
@@ -150,7 +163,7 @@ public class AdminService {
                 .end(request.getConceptRound().getEnd())
                 .duration(request.getConceptRound().getDuration())
                 .result(request.getConceptRound().getResult())
-                .questions(conceptQuestionsList) // <-- Attach the list here
+                .questions(conceptQuestionsList)
                 .build();
 
         Contest.RoundTimeDto hrRound = Contest.RoundTimeDto.builder()
@@ -158,7 +171,7 @@ public class AdminService {
                 .end(request.getHrRound().getEnd())
                 .duration(request.getHrRound().getDuration())
                 .result(request.getHrRound().getResult())
-                .questions(hrQuestionsList) // <-- Attach the list here
+                .questions(hrQuestionsList)
                 .build();
 
         Contest contest = Contest.builder()

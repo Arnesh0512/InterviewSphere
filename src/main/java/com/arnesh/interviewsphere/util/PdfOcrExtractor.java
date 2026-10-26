@@ -15,9 +15,7 @@ import java.io.File;
 @Component
 public class PdfOcrExtractor {
 
-    /**
-     * Extracts text from PDF using PDFBox without OCR.
-     */
+    
     public String extractTextWithoutOcr(File pdfFile) {
         try (PDDocument document = Loader.loadPDF(pdfFile)) {
             PDFTextStripper stripper = new PDFTextStripper();
@@ -28,9 +26,7 @@ public class PdfOcrExtractor {
         }
     }
 
-    /**
-     * Extracts text from scanned PDF using PDFBox page rendering + Tess4J OCR.
-     */
+    
     public String extractTextWithOcr(File pdfFile) {
         StringBuilder text = new StringBuilder();
         try (PDDocument document = Loader.loadPDF(pdfFile)) {

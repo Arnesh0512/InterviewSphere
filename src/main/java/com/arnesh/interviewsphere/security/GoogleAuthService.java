@@ -20,9 +20,7 @@ public class GoogleAuthService {
     @Value("${google.client.id}")
     private String googleClientId;
 
-    /**
-     * Verifies the incoming Google OAuth ID token and extracts identity claims.
-     */
+    
     public GoogleIdToken.Payload verifyGoogleToken(Map<String, Object> data) {
         if (data == null) {
             throw new CustomException("Invalid input", HttpStatus.BAD_REQUEST);

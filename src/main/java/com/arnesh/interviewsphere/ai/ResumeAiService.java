@@ -29,9 +29,11 @@ public class ResumeAiService {
     private final ResumeUtil resumeUtil;
     private final ObjectMapper objectMapper;
 
-    /**
-     * Overloaded helper accepting MultipartFile directly from REST endpoints.
-     */
+
+    
+
+
+
     public String processResume(MultipartFile file, String ocrMode) {
         File tempFile = resumeUtil.convertMultipartToTempFile(file);
         try {
@@ -43,9 +45,11 @@ public class ResumeAiService {
         }
     }
 
-    /**
-     * Extracts text from PDF and analyzes resume content.
-     */
+
+    
+
+
+
     public String processResume(String pdfPath, String ocrMode) {
         String extractedText = "Y".equalsIgnoreCase(ocrMode)
                 ? resumeUtil.extractTextWithOcr(pdfPath)
@@ -75,10 +79,12 @@ public class ResumeAiService {
         }
     }
 
-    /**
-     * Generates interview questions based on candidate resume summary and
-     * session history.
-     */
+
+    
+
+
+
+
     public QuestionListResponse generateResumeQuestion(
             String summaryText,
             int numQuestions,
@@ -112,9 +118,11 @@ public class ResumeAiService {
         }
     }
 
-    /**
-     * Evaluates candidate responses to resume questions.
-     */
+
+    
+
+
+
     public ResumeEvaluationResponse evaluateResumeAnswers(String summaryText, List<?> questionBank) {
         try {
             String content = String.format("""
@@ -139,9 +147,11 @@ public class ResumeAiService {
         }
     }
 
-    /**
-     * Generates combined feedback across DIFFERENT resume interview sessions.
-     */
+
+    
+
+
+
     public CombinedFeedbackDetails generateResumeCombinedDiffSessionFeedback(
             String summaryText,
             Map<String, Object> sessionData) {
@@ -168,10 +178,11 @@ public class ResumeAiService {
         }
     }
 
-    /**
-     * Generates combined feedback across reattempts of the SAME resume
-     * interview session.
-     */
+
+    
+
+
+    
     public CombinedFeedbackDetails generateResumeCombinedSameSessionFeedback(
             String summaryText,
             Map<String, Object> sessionData) {

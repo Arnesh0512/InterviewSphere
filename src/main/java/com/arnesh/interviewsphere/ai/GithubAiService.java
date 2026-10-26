@@ -28,9 +28,11 @@ public class GithubAiService {
     private final GithubUtil githubUtil;
     private final ObjectMapper objectMapper;
 
-    /**
-     * Fetches details and summarizes a GitHub repository.
-     */
+
+    
+
+
+
     public ProcessRepoResponse processRepo(String selectedRepoLink) {
         var details = githubUtil.fetchRepoDetails(selectedRepoLink);
 
@@ -74,10 +76,11 @@ public class GithubAiService {
         }
     }
 
-    /**
-     * Generates interview questions specific to the repository and candidate
-     * session history.
-     */
+
+    
+
+
+
     public QuestionListResponse generateGithubQuestion(
             String repoSummary,
             int numQuestions,
@@ -111,9 +114,11 @@ public class GithubAiService {
         }
     }
 
-    /**
-     * Evaluates answers provided for GitHub repository questions.
-     */
+
+    
+
+
+
     public GithubEvaluationResponse evaluateGithubAnswers(String repoSummary, List<?> questionBank) {
         try {
             String content = String.format("""
@@ -138,9 +143,11 @@ public class GithubAiService {
         }
     }
 
-    /**
-     * Generates combined feedback across DIFFERENT GitHub interview sessions.
-     */
+
+    
+
+
+
     public CombinedFeedbackDetails generateGithubCombinedDiffSessionFeedback(
             String repoSummary,
             Map<String, Object> sessionData) {
@@ -167,10 +174,11 @@ public class GithubAiService {
         }
     }
 
-    /**
-     * Generates combined feedback across reattempts of the SAME GitHub
-     * interview session.
-     */
+
+    
+
+
+    
     public CombinedFeedbackDetails generateGithubCombinedSameSessionFeedback(
             String repoSummary,
             Map<String, Object> sessionData) {

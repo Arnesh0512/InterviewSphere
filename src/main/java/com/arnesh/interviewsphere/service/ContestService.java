@@ -1,26 +1,39 @@
 package com.arnesh.interviewsphere.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.arnesh.interviewsphere.ai.ContestAiService;
 import com.arnesh.interviewsphere.dto.response.ContestAiResponses;
-import com.arnesh.interviewsphere.entity.*;
+import com.arnesh.interviewsphere.entity.Candidate;
+import com.arnesh.interviewsphere.entity.Contest;
+import com.arnesh.interviewsphere.entity.ContestCandidateResponse;
+import com.arnesh.interviewsphere.entity.ContestLeaderboard;
+import com.arnesh.interviewsphere.entity.LeetCodeQuestion;
 import com.arnesh.interviewsphere.exception.CustomException;
-import com.arnesh.interviewsphere.repository.*;
+import com.arnesh.interviewsphere.repository.ContestCandidateResponseRepository;
+import com.arnesh.interviewsphere.repository.ContestLeaderboardRepository;
+import com.arnesh.interviewsphere.repository.ContestRepository;
+import com.arnesh.interviewsphere.repository.LeetCodeQuestionRepository;
 import com.arnesh.interviewsphere.security.UserPrincipal;
 import com.arnesh.interviewsphere.util.ContestEvaluationUtil;
 import com.arnesh.interviewsphere.util.PdfOcrExtractor;
 import com.arnesh.interviewsphere.util.TimeUtil;
 import com.arnesh.interviewsphere.verification.CandidateVerificationService;
 import com.arnesh.interviewsphere.verification.ContestVerificationService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.OffsetDateTime;
-import java.util.*;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -153,7 +166,6 @@ public class ContestService {
             throw new CustomException("Only PDF allowed", HttpStatus.BAD_REQUEST);
         }
 
-        // Upload directly to Supabase and retrieve public URL
         String fileUrl = supabaseStorageService.uploadFile("contest-resumes", file);
 
         File tempFile;
@@ -206,7 +218,7 @@ public class ContestService {
 
         Map<String, Object> resumeMap = new HashMap<>();
         resumeMap.put("summary", summary);
-        resumeMap.put("file_url", fileUrl); // Storing the Supabase URL
+        resumeMap.put("file_url", fileUrl);
         resumeMap.put("question_bank", evalResponse.getResults());
         resumeMap.put("overall_feedback", evalResponse.getOverallFeedback());
         resumeMap.put("submitted_at", timestamp);

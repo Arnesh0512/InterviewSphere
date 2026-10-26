@@ -76,7 +76,6 @@ public class Contest {
     @Column(name = "leaderboard_declare_time", nullable = false)
     private OffsetDateTime leaderboardDeclareTime;
 
-    // Stored as JSONB to cleanly group round timings
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "resume_round", columnDefinition = "jsonb", nullable = false)
     private RoundTimeDto resumeRound;

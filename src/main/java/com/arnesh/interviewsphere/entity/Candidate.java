@@ -87,7 +87,6 @@ public class Candidate {
     @Column(name = "created_on", nullable = false, updatable = false)
     private OffsetDateTime createdOn;
 
-    // Helper method to synchronize bidirectional relationship
     public void addEducation(CandidateEducation edu) {
         education.add(edu);
         edu.setCandidate(this);

@@ -10,10 +10,7 @@ import java.util.*;
 @Component
 public class RankingUtil {
 
-    /**
-     * Normalizes question raw scores using z-score normalization, accumulates
-     * scores, and ranks candidates.
-     */
+    
     public List<CandidateRankResult> normalizeAndRank(List<List<QuestionScoreEntry>> candidatesScores) {
         Map<UUID, CandidateAccumulator> results = new HashMap<>();
 
@@ -66,10 +63,7 @@ public class RankingUtil {
         return calculateRankAndPercentile(leaderboard);
     }
 
-    /**
-     * Combines section-level rank results, calculates final accumulated z-scores,
-     * and recalculates global ranks.
-     */
+    
     public List<CandidateRankResult> finalizeLeaderboard(List<List<CandidateRankResult>> sectionOutputs) {
         Map<UUID, CandidateAccumulator> cumulative = new HashMap<>();
 
@@ -104,13 +98,8 @@ public class RankingUtil {
         return calculateRankAndPercentile(leaderboard);
     }
 
-    /**
-     * Helper method to sort candidates, assign ranks (handling ties), and compute
-     * percentiles.
-     */
+    
     private List<CandidateRankResult> calculateRankAndPercentile(List<CandidateRankResult> leaderboard) {
-        // Sort: 1) Higher final score first, 2) Tie-break with earlier latest
-        // submission time
         leaderboard.sort((a, b) -> {
             int scoreCompare = Double.compare(b.getFinalNormalizedScore(), a.getFinalNormalizedScore());
             if (scoreCompare != 0) {
@@ -146,7 +135,6 @@ public class RankingUtil {
             }
             currentRank++;
 
-            // Percentile calculation
             if (totalCandidates == 1) {
                 current.setPercentile(100.0);
             } else {

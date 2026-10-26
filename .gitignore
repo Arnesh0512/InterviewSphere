@@ -36,3 +36,4 @@ build/
 # Ignore local application properties containing secrets
 src/main/resources/application.properties
 *.properties
+**/.env

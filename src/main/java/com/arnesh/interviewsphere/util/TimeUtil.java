@@ -9,9 +9,7 @@ public class TimeUtil {
         // Private constructor to prevent instantiation
     }
 
-    /**
-     * Generates the current timestamp in UTC zone offset.
-     */
+    
     public static OffsetDateTime generateTimestamp() {
         return OffsetDateTime.now(ZoneOffset.UTC);
     }

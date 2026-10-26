@@ -26,7 +26,7 @@ public class ResumeController {
 
     private final ResumeService resumeService;
 
-    // 1. Upload Resume[cite: 28]
+    // 1. Upload Resume
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<Map<String, Object>>> uploadResume(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -36,7 +36,7 @@ public class ResumeController {
         return ResponseEntity.ok(ApiResponse.success("Resume uploaded successfully", response));
     }
 
-    // 2. Get All Resumes[cite: 28]
+    // 2. Get All Resumes
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getAllResumes(
             @AuthenticationPrincipal UserPrincipal principal) {
@@ -44,16 +44,23 @@ public class ResumeController {
         return ResponseEntity.ok(ApiResponse.success(resumes));
     }
 
-    // 3. Get Resume Track File Metadata[cite: 28]
+    // 3. Get Resume Track File Metadata
     @GetMapping("/file")
-    public ResponseEntity<ApiResponse<PracticeResumeTrack>> getResumeFile(
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getResumeFile(
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam("resume_id") String resumeId) {
         PracticeResumeTrack track = resumeService.getResumeTrack(principal, resumeId);
-        return ResponseEntity.ok(ApiResponse.success(track));
+        
+        Map<String, Object> filteredData = Map.of(
+            "id", track.getId(),
+            "file_url", track.getFileUrl(),
+            "filename", track.getFilename()
+        );
+
+        return ResponseEntity.ok(ApiResponse.success(filteredData));
     }
 
-    // 4. Generate Questions Session[cite: 28]
+    // 4. Generate Questions Session
     @PostMapping("/questions/new")
     public ResponseEntity<ApiResponse<QuestionSessionResponse>> generateQuestions(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -63,7 +70,7 @@ public class ResumeController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 5. Submit Session[cite: 28]
+    // 5. Submit Session
     @PostMapping("/questions/submit")
     public ResponseEntity<ApiResponse<Map<String, Object>>> submitSession(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -74,7 +81,7 @@ public class ResumeController {
         return ResponseEntity.ok(ApiResponse.success(Map.of("success", true)));
     }
 
-    // 6. Save Answer[cite: 28]
+    // 6. Save Answer
     @PostMapping("/questions/save")
     public ResponseEntity<ApiResponse<Map<String, Object>>> saveAnswer(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -85,7 +92,7 @@ public class ResumeController {
         return ResponseEntity.ok(ApiResponse.success(Map.of("success", true)));
     }
 
-    // 7. Reattempt Session[cite: 28]
+    // 7. Reattempt Session
     @PutMapping("/questions/reattempt")
     public ResponseEntity<ApiResponse<Map<String, String>>> reattemptSession(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -95,7 +102,7 @@ public class ResumeController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 8. Fake Submit Session[cite: 28]
+    // 8. Fake Submit Session
     @PatchMapping("/questions/fake/submit")
     public ResponseEntity<ApiResponse<Map<String, Object>>> fakeSubmitSession(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -105,7 +112,7 @@ public class ResumeController {
         return ResponseEntity.ok(ApiResponse.success(Map.of("success", true)));
     }
 
-    // 9. Generate AI Feedback[cite: 28]
+    // 9. Generate AI Feedback
     @GetMapping("/questions/feedback")
     public ResponseEntity<ApiResponse<ResumeAiResponses.ResumeEvaluationResponse>> generateFeedback(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -116,7 +123,7 @@ public class ResumeController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 10. Get All Sessions[cite: 28]
+    // 10. Get All Sessions
     @GetMapping("/questions/sessions")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getAllSessions(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -125,7 +132,7 @@ public class ResumeController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 11. Get Session Data[cite: 28]
+    // 11. Get Session Data
     @GetMapping("/questions/data")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getSessionData(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -135,7 +142,7 @@ public class ResumeController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 12. Delete Resume[cite: 28]
+    // 12. Delete Resume
     @DeleteMapping("/delete")
     public ResponseEntity<ApiResponse<Map<String, Object>>> deleteResume(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -144,7 +151,7 @@ public class ResumeController {
         return ResponseEntity.ok(ApiResponse.success(Map.of("success", true)));
     }
 
-    // 13. Delete Single Session[cite: 28]
+    // 13. Delete Single Session
     @DeleteMapping("/questions/delete")
     public ResponseEntity<ApiResponse<Map<String, Object>>> deleteSession(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -154,7 +161,7 @@ public class ResumeController {
         return ResponseEntity.ok(ApiResponse.success(Map.of("success", true)));
     }
 
-    // 14. Delete Answers and Reattempt[cite: 28]
+    // 14. Delete Answers and Reattempt
     @PutMapping("/questions/delete-reattempt")
     public ResponseEntity<ApiResponse<Map<String, Object>>> deleteAndReattempt(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -164,7 +171,7 @@ public class ResumeController {
         return ResponseEntity.ok(ApiResponse.success(Map.of("success", true)));
     }
 
-    // 15. Combined Feedback Across Different Sessions[cite: 28]
+    // 15. Combined Feedback Across Different Sessions
     @GetMapping("/progress/resume")
     public ResponseEntity<ApiResponse<Map<String, Object>>> combinedFeedbackLastXSessions(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -174,7 +181,7 @@ public class ResumeController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 16. Combined Feedback Within Same Session Reattempts[cite: 28]
+    // 16. Combined Feedback Within Same Session Reattempts
     @GetMapping("/progress/session")
     public ResponseEntity<ApiResponse<Map<String, Object>>> combinedFeedbackSameSession(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -185,7 +192,7 @@ public class ResumeController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 17. Get Different Combined Feedback History[cite: 28]
+    // 17. Get Different Combined Feedback History
     @GetMapping("/progress/resume/all")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getDifferentCombinedFeedback(
             @AuthenticationPrincipal UserPrincipal principal,
@@ -194,7 +201,7 @@ public class ResumeController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    // 18. Get Same Combined Feedback History[cite: 28]
+    // 18. Get Same Combined Feedback History
     @GetMapping("/progress/session/all")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getSameCombinedFeedback(
             @AuthenticationPrincipal UserPrincipal principal,
