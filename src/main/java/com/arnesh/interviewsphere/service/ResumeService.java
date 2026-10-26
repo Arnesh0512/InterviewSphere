@@ -58,7 +58,6 @@ public class ResumeService {
         var candidateResult = candidateVerificationService.verifyCandidateById(principal.getId().toString(), "Y");
         Candidate candidate = candidateResult.getCandidate();
 
-        // 1. Upload to Supabase Storage
         String fileUrl = supabaseStorageService.uploadFile("resumes", file);
 
         File tempFile;
@@ -70,14 +69,10 @@ public class ResumeService {
             throw new CustomException("Failed to process file locally", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        // Inside ResumeService.java, update the uploadResume method's text processing block:
-
         String summary;
         try {
-            // Let ResumeAiService handle text extraction (OCR or without OCR) AND LLM summarization
             summary = resumeAiService.processResume(tempFile.getAbsolutePath(), ocrMode);
             
-            // Sanitize generated summary to remove null bytes (0x00) which break Postgres UTF-8 encoding
             if (summary != null) {
                 summary = summary.replace("\0", "");
             }
@@ -94,7 +89,7 @@ public class ResumeService {
                 .resumeNumber(nextResumeNum)
                 .summary(summary)
                 .filename(file.getOriginalFilename())
-                .fileUrl(fileUrl) // Replaced fileId with fileUrl
+                .fileUrl(fileUrl)
                 .createdOn(TimeUtil.generateTimestamp())
                 .totalSessions(0)
                 .build();
@@ -118,8 +113,6 @@ public class ResumeService {
             Map<String, Object> map = new HashMap<>();
             map.put("resume_id", track.getId().toString());
             map.put("resume_number", track.getResumeNumber());
-            map.put("file_url", track.getFileUrl()); // Exposed URL directly
-            map.put("filename", track.getFilename());
             map.put("created_on", track.getCreatedOn());
             return map;
         }).toList();
@@ -359,7 +352,7 @@ public class ResumeService {
         var verifiedSession = resumeVerificationService.verifyQuestionSession(sessionIdStr,
                 verifiedTrack.getResumeId());
 
-        return Map.of("resume_id", verifiedTrack.getResumeId().toString(), "session", verifiedSession.getSessionDoc());
+        return Map.of("session", verifiedSession.getSessionDoc());
     }
 
     // 12. Delete Entire Resume Track

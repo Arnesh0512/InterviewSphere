@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.arnesh.interviewsphere.ai.CodingAiService;
-import com.arnesh.interviewsphere.constant.Difficulty;
 import com.arnesh.interviewsphere.constant.Company;
+import com.arnesh.interviewsphere.constant.Difficulty;
 import com.arnesh.interviewsphere.constant.Tag;
 import com.arnesh.interviewsphere.dto.request.SaveAnswerRequest;
 import com.arnesh.interviewsphere.dto.request.SubmitSessionRequest;
@@ -33,6 +33,7 @@ import com.arnesh.interviewsphere.util.CodingUtil;
 import com.arnesh.interviewsphere.util.TimeUtil;
 import com.arnesh.interviewsphere.verification.CandidateVerificationService;
 import com.arnesh.interviewsphere.verification.CodingVerificationService;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -168,10 +169,8 @@ public class CodingService {
         int time = numQuestions * 60; // 60 minutes per question
 
         for (LeetCodeQuestion q : questionsList) {
-            // Change parsing to Integer:
             Integer qId = q.getQuestionId();
 
-            // In questionBank builder:
             questionBank.add(QuestionSession.Question.builder()
                     .questionId(qId)
                     .language("")
@@ -331,7 +330,6 @@ public class CodingService {
         }
 
 
-        // Pass enrichedQuestions directly without the (List) cast
         CodingAiResponses.CodingEvaluationResponse evaluation = codingAiService.evaluateCodingAnswers(enrichedQuestions);
 
         if (evaluation.getFeedbackPerQuestion() != null) {
@@ -380,8 +378,29 @@ public class CodingService {
     public Map<String, Object> getSessionData(UserPrincipal principal, String codingIdStr, String sessionIdStr) {
         var verifiedCoding = codingVerificationService.verifyCoding(codingIdStr, principal.getId());
         var verifiedSession = codingVerificationService.verifyQuestionSession(sessionIdStr, verifiedCoding.getCodingId());
+        QuestionSession session = verifiedSession.getSessionDoc();
 
-        return Map.of("coding_id", verifiedCoding.getCodingId().toString(), "session", verifiedSession.getSessionDoc());
+        if (session.getQuestionBank() != null) {
+            List<Integer> questionIds = session.getQuestionBank().stream()
+                    .map(q -> q.getQuestionId())
+                    .filter(Objects::nonNull)
+                    .toList();
+
+            List<LeetCodeQuestion> leetCodeQuestions = leetCodeQuestionRepository.findByQuestionIdIn(questionIds);
+            Map<Integer, LeetCodeQuestion> questionMap = leetCodeQuestions.stream()
+                    .collect(java.util.stream.Collectors.toMap(q -> q.getQuestionId(), q -> q, (q1, q2) -> q1));
+
+            for (QuestionSession.Question q : session.getQuestionBank()) {
+                if (q.getQuestionId() != null && questionMap.containsKey(q.getQuestionId())) {
+                    LeetCodeQuestion lcQ = questionMap.get(q.getQuestionId());
+                    String taskName = lcQ.getTaskName() != null ? lcQ.getTaskName() : "";
+                    String description = lcQ.getProblemDescription() != null ? lcQ.getProblemDescription() : "";
+                    q.setQuestion(taskName + "\n" + description);
+                }
+            }
+        }
+
+        return Map.of("coding_id", verifiedCoding.getCodingId().toString(), "session", session);
     }
 
     // 11. Delete Coding Track
