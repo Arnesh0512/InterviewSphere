@@ -135,6 +135,13 @@ public class ResumePrompts {
             - Provide constructive feedback
             - Give overall feedback and overall score (0-10)
 
+            CRITICAL EVALUATION MANDATE:
+            - PRIMARY SOURCE OF TRUTH: All feedback fields must be derived EXCLUSIVELY from the candidate's actual answers to the questions across the sessions.
+            - THE RESUME SUMMARY ROLE: The resume summary is provided ONLY to cross-check whether the candidate's technical claims match their actual performance or if they are giving fake/contradictory responses. 
+            - Do NOT write positive feedback based on things listed in the resume if they were not actually demonstrated or answered correctly in the code/responses.
+            - PENALTY FOR BAD ANSWERS: If a user's answer is incorrect, empty, unattempted, or contradicts their resume summary, you must reflect this as a weakness and give a strict, poor evaluation for that section.
+            - ABSOLUTE PROHIBITION: Do NOT praise or evaluate the candidate based on the resume summary. If it's not in the answers, it does not exist for this evaluation.
+
             Return strictly valid JSON in this format:
 
             {
