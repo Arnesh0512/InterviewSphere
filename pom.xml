@@ -241,6 +241,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <mainClass>com.arnesh.interviewsphere.InterviewsphereApplication</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

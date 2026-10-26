@@ -1,0 +1,8 @@
+.git
+.gitignore
+.mvn/wrapper/maven-wrapper.jar
+target
+*.log
+hs_err_pid*
+.env
+src/main/resources/application.properties
